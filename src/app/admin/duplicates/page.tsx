@@ -16,6 +16,7 @@ type Watch = {
   jaar_geintroduceerd: number | null
   type_uurwerk: string | null
   productie_status: string | null
+  geslacht: string | null
 }
 
 type DuplicateGroup = {
