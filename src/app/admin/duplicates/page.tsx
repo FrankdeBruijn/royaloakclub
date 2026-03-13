@@ -43,7 +43,7 @@ export default function DuplicatesPage() {
 
     const map = new Map<string, Watch[]>()
     for (const w of data) {
-      const key = `${w.model_id ?? ''}|${w.modelnaam ?? ''}|${w.materiaal ?? ''}`
+      const key = `${w.model_id ?? ""}|${w.modelnaam ?? ""}|${w.materiaal ?? ""}|${w.type_uurwerk ?? ""}|${w.geslacht ?? ""}`
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(w)
     }
@@ -105,7 +105,7 @@ export default function DuplicatesPage() {
         ) : (
           <div className="space-y-6">
             {visibleGroups.map(group => {
-              const [modelId, modelnaam, materiaal] = group.key.split('|')
+              const [modelId, modelnaam, materiaal, caliber, geslacht] = group.key.split('|')
               return (
                 <div key={group.key} className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden">
                   <div className="px-6 py-4 bg-[#FAFAF8] border-b border-[#E8E2D9] flex items-center justify-between">
