@@ -42,7 +42,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
       </div>
 
       <div className="px-6 md:px-10 py-16 max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 gap-8 md:gap-16 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
 
           {/* IMAGE */}
           <div className="md:sticky md:top-28">
