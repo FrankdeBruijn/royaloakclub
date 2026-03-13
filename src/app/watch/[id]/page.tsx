@@ -28,14 +28,11 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
-
-      {/* NAV */}
       <nav className="sticky top-0 z-50 px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
         <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">← Back to Archive</Link>
       </nav>
 
-      {/* BREADCRUMB */}
       <div className="px-10 py-4 flex items-center gap-2 text-[10px] tracking-[0.15em] uppercase text-[#BBB] border-b border-[#E8E2D9] bg-white">
         <Link href="/" className="hover:text-[#C9A84C] transition-colors">Home</Link>
         <span>/</span>
@@ -52,14 +49,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
             <div className="bg-white rounded-2xl shadow-lg shadow-black/5 p-12 flex items-center justify-center aspect-square relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/3 to-transparent" />
               {imageUrl ? (
-                <Image
-                  src={imageUrl}
-                  alt={watch.modelnaam || 'Royal Oak'}
-                  width={500}
-                  height={500}
-                  className="object-contain relative z-10"
-                  unoptimized
-                />
+                <Image src={imageUrl} alt={watch.modelnaam || 'Royal Oak'} width={500} height={500} className="object-contain relative z-10" unoptimized />
               ) : (
                 <div className="text-center">
                   <div className="w-24 h-24 mx-auto mb-4 opacity-10">
@@ -69,7 +59,6 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
                 </div>
               )}
             </div>
-            <p className="text-center text-[9px] tracking-[0.15em] uppercase text-[#CCC] mt-4">{watch.image || ''}</p>
           </div>
 
           {/* DETAILS */}
@@ -79,6 +68,17 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
               <h1 className="font-serif text-5xl font-light leading-tight mb-3">{watch.modelnaam}</h1>
               <p className="font-mono text-base text-[#C9A84C] tracking-wider">{watch.model_id}</p>
             </div>
+
+            {/* DESCRIPTION */}
+            {watch.description && (
+              <div className="mb-8 p-6 bg-white rounded-xl border border-[#E8E2D9]">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="block w-4 h-px bg-[#C9A84C]" />
+                  <h2 className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C]">About</h2>
+                </div>
+                <p className="text-sm leading-relaxed text-[#555]">{watch.description}</p>
+              </div>
+            )}
 
             {/* PRICE */}
             {(watch.prijs_euro || watch.prijs_dollar) && (
@@ -112,7 +112,6 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
               ))}
             </div>
 
-            {/* BACK */}
             <div className="mt-8">
               <Link href="/database" className="inline-flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">
                 <span>←</span> Back to Archive
@@ -122,7 +121,6 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      {/* FOOTER */}
       <footer className="px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center mt-16">
         <span className="font-serif text-sm tracking-[0.2em] text-[#1A1A1A]">ROYAL OAK CLUB</span>
         <span className="text-[10px] text-[#AAA]">© Royal Oak Club — Independent since 2012</span>
