@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import sharp from 'sharp'
+import { Resend } from 'resend'
 
 const SUPABASE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co"
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!
 const BUCKET = "submissions"
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData()
@@ -39,9 +41,13 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = await createClient()
+  const modelnaam = formData.get('modelnaam') as string || 'Onbekend'
+  const model_id = formData.get('model_id') as string || ''
+  const ingediend_door = formData.get('ingediend_door') as string || 'Anoniem'
+
   const { error } = await supabase.from('submissions').insert({
-    modelnaam: formData.get('modelnaam') as string || null,
-    model_id: formData.get('model_id') as string || null,
+    modelnaam,
+    model_id,
     type: formData.get('type') as string || null,
     geslacht: formData.get('geslacht') as string || null,
     materiaal: formData.get('materiaal') as string || null,
@@ -53,11 +59,45 @@ export async function POST(request: NextRequest) {
     prijs_euro: formData.get('prijs_euro') as string || null,
     prijs_dollar: formData.get('prijs_dollar') as string || null,
     description: formData.get('description') as string || null,
-    ingediend_door: formData.get('ingediend_door') as string || null,
+    ingediend_door,
     image: filename,
     status: 'pending'
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  await resend.emails.send({
+    from: 'Royal Oak Club <onboarding@resend.dev>',
+    to: 'koen@koensmulders.nl',
+    subject: `Nieuwe submission: ${modelnaam}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; color: #1A1A1A;">
+        <h1 style="font-size: 24px; font-weight: 400; margin-bottom: 8px;">Nieuwe horloge submission</h1>
+        <p style="color: #888; font-size: 14px; margin-bottom: 32px;">Er staat een nieuw horloge klaar voor beoordeling.</p>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; color: #888; width: 140px;">Model</td>
+            <td style="padding: 10px 0; font-weight: 500;">${modelnaam}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; color: #888;">Reference</td>
+            <td style="padding: 10px 0;">${model_id}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; color: #888;">Ingediend door</td>
+            <td style="padding: 10px 0;">${ingediend_door}</td>
+          </tr>
+        </table>
+        <div style="margin-top: 32px;">
+          <a href="https://royaloakclub.vercel.app/admin/submissions" 
+             style="background: #C9A84C; color: white; padding: 12px 28px; text-decoration: none; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
+            Bekijk submission →
+          </a>
+        </div>
+        <p style="margin-top: 32px; font-size: 12px; color: #BBB;">Royal Oak Club — Independent Archive</p>
+      </div>
+    `
+  })
+
   return NextResponse.json({ success: true })
 }
