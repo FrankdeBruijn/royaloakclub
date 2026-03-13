@@ -70,17 +70,17 @@ export default function SubmitPage() {
 
   return (
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
-      <nav className="sticky top-0 z-50 px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
+      <nav className="sticky top-0 z-50 px-6 md:px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
         <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">← Back to Archive</Link>
       </nav>
 
-      <div className="px-10 py-12 max-w-5xl">
+      <div className="px-6 md:px-10 py-12 max-w-5xl">
         <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C] mb-2">Community</p>
         <h1 className="font-serif text-4xl font-light mb-3">Submit a Watch</h1>
         <p className="text-sm text-[#888] mb-10">Know a Royal Oak that's missing from our archive? Submit it below and we'll review it for inclusion.</p>
 
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           <div className="col-span-1">
             <div className="bg-white rounded-xl border border-[#E8E2D9] p-6 flex flex-col items-center">
               <p className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] mb-4">Photo</p>
@@ -114,7 +114,7 @@ export default function SubmitPage() {
               <div className="px-8 py-5 border-b border-[#E8E2D9]">
                 <h2 className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C]">Watch Information</h2>
               </div>
-              <div className="p-8 grid grid-cols-2 gap-5">
+              <div className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
                 {/* Honeypot */}
                 <input type="text" value={honeypot} onChange={e => setHoneypot(e.target.value)} style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
                 {FIELDS.map(f => (

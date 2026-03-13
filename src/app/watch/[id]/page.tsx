@@ -28,12 +28,12 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
-      <nav className="sticky top-0 z-50 px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
+      <nav className="sticky top-0 z-50 px-6 md:px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
         <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">← Back to Archive</Link>
       </nav>
 
-      <div className="px-10 py-4 flex items-center gap-2 text-[10px] tracking-[0.15em] uppercase text-[#BBB] border-b border-[#E8E2D9] bg-white">
+      <div className="px-6 md:px-10 py-4 flex items-center gap-2 text-[10px] tracking-[0.15em] uppercase text-[#BBB] border-b border-[#E8E2D9] bg-white">
         <Link href="/" className="hover:text-[#C9A84C] transition-colors">Home</Link>
         <span>/</span>
         <Link href="/database" className="hover:text-[#C9A84C] transition-colors">Database</Link>
@@ -41,11 +41,11 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
         <span className="text-[#C9A84C]">{watch.modelnaam}</span>
       </div>
 
-      <div className="px-10 py-16 max-w-6xl">
-        <div className="grid grid-cols-2 gap-16 items-start">
+      <div className="px-6 md:px-10 py-16 max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-1 sm:grid-cols-2 gap-8 md:gap-16 items-start">
 
           {/* IMAGE */}
-          <div className="sticky top-28">
+          <div className="md:sticky md:top-28">
             <div className="bg-white rounded-2xl shadow-lg shadow-black/5 p-12 flex items-center justify-center aspect-square relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/3 to-transparent" />
               {imageUrl ? (
@@ -82,7 +82,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
 
             {/* PRICE */}
             {(watch.prijs_euro || watch.prijs_dollar) && (
-              <div className="grid grid-cols-2 gap-4 mb-8 p-6 bg-white rounded-xl border border-[#E8E2D9]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 p-6 bg-white rounded-xl border border-[#E8E2D9]">
                 {watch.prijs_euro && (
                   <div>
                     <span className="text-[9px] tracking-[0.2em] uppercase text-[#AAA] block mb-1">Price EU</span>
@@ -121,7 +121,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      <footer className="px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center mt-16">
+      <footer className="px-6 md:px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center mt-16">
         <span className="font-serif text-sm tracking-[0.2em] text-[#1A1A1A]">ROYAL OAK CLUB</span>
         <span className="text-[10px] text-[#AAA]">© Royal Oak Club — Independent since 2012</span>
       </footer>

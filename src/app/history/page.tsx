@@ -3,7 +3,7 @@ import Link from 'next/link'
 export default function HistoryPage() {
   return (
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
-      <nav className="sticky top-0 z-50 px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
+      <nav className="sticky top-0 z-50 px-6 md:px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
         <div className="flex items-center gap-6">
           <Link href="/" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Home</Link>
@@ -11,9 +11,9 @@ export default function HistoryPage() {
         </div>
       </nav>
 
-      <div className="px-10 py-16 max-w-3xl">
+      <div className="px-6 md:px-10 py-16 max-w-3xl mx-auto">
         <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C] mb-2">Background</p>
-        <h1 className="font-serif text-5xl font-light mb-12">History of the Royal Oak</h1>
+        <h1 className="font-serif text-3xl md:text-5xl font-light mb-12">History of the Royal Oak</h1>
 
         <div className="space-y-8 text-[#444] leading-relaxed">
           <div>
@@ -47,7 +47,7 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      <footer className="px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center mt-16">
+      <footer className="px-6 md:px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center mt-16">
         <span className="font-serif text-sm tracking-[0.2em] text-[#1A1A1A]">ROYAL OAK CLUB</span>
         <span className="text-[10px] text-[#AAA]">© Royal Oak Club — Independent since 2012</span>
       </footer>

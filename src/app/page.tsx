@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import Nav from '@/components/Nav'
 import Image from 'next/image'
 
 const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/public/watch-images"
@@ -22,23 +23,11 @@ export default async function HomePage() {
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
 
       {/* NAV */}
-      <nav className="fixed top-0 w-full z-50 px-10 py-5 flex justify-between items-center bg-white/90 backdrop-blur border-b border-[#E8E2D9]">
-        <span className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</span>
-        <div className="flex gap-8 items-center">
-          <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Database</Link>
-          <Link href="/history" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">History</Link>
-          <Link href="/contact" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Contact</Link>
-          <Link href="/submit" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Submit a Watch</Link>
-          <Link href="/login" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Login</Link>
-          <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 bg-[#C9A84C] text-white hover:bg-[#B8973B] transition-colors">
-            Explore →
-          </Link>
-        </div>
-      </nav>
+      <Nav />
 
       {/* HERO */}
       <section className="min-h-screen flex items-center pt-20">
-        <div className="w-full px-10 grid grid-cols-2 gap-16 items-center">
+        <div className="w-full px-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
           <div>
             <p className="text-[11px] tracking-[0.3em] uppercase text-[#C9A84C] mb-6 flex items-center gap-3">
               <span className="block w-8 h-px bg-[#C9A84C]" />Independent Archive — Est. 2012
@@ -94,7 +83,7 @@ export default async function HomePage() {
       </section>
 
       {/* COLLECTION GRID */}
-      <section className="px-10 py-24 bg-white">
+      <section className="px-6 md:px-10 py-24 bg-white">
         <div className="flex justify-between items-end mb-12">
           <div>
             <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C] mb-3">The Collection</p>
@@ -142,7 +131,7 @@ export default async function HomePage() {
       </section>
 
       {/* SEARCH BAR */}
-      <section className="px-10 py-20 bg-[#1A1A1A]">
+      <section className="px-6 md:px-10 py-20 bg-[#1A1A1A]">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C] mb-4">Find any reference</p>
           <h2 className="font-serif text-4xl font-light text-white mb-10">Search the Archive</h2>
@@ -159,7 +148,7 @@ export default async function HomePage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center">
+      <footer className="px-6 md:px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center">
         <span className="font-serif text-sm tracking-[0.2em] text-[#1A1A1A]">ROYAL OAK CLUB</span>
         <span className="text-[10px] text-[#AAA]">© Royal Oak Club — Independent since 2012</span>
         <Link href="/database" className="text-[10px] tracking-[0.2em] uppercase text-[#C9A84C] hover:text-[#B8973B] transition-colors">Database →</Link>

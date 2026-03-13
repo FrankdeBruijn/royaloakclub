@@ -36,12 +36,12 @@ export default function DatabasePage() {
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
 
       {/* NAV */}
-      <nav className="sticky top-0 z-50 px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
+      <nav className="sticky top-0 z-50 px-6 md:px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
         <span className="text-[11px] tracking-[0.2em] uppercase text-[#C9A84C]">Archive</span>
       </nav>
 
-      <div className="px-10 py-12">
+      <div className="px-6 md:px-10 py-12">
         {/* HEADER */}
         <div className="flex justify-between items-end mb-10 pb-8 border-b border-[#E8E2D9]">
           <div>
@@ -78,7 +78,7 @@ export default function DatabasePage() {
         </div>
 
         {/* GRID */}
-        <div className="grid grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
           {loading
             ? Array.from({ length: 12 }).map((_, i) => (
                 <div key={i} className="bg-white rounded-xl overflow-hidden animate-pulse">
