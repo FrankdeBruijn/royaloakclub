@@ -44,9 +44,11 @@ export default function SubmissionsPage() {
     setLoading(false)
   }
 
-  async function getImageUrl(filename: string) {
-    const { data } = await supabase.storage.from('submissions').createSignedUrl(filename, 3600)
-    return data?.signedUrl || null
+  async function getImageUrl(filename: string): Promise<string | null> {
+    const res = await fetch(`/api/signed-url?filename=${encodeURIComponent(filename)}`)
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.url || null
   }
 
   async function handleApprove(submission: Submission) {
