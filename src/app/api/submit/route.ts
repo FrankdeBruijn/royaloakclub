@@ -6,7 +6,6 @@ import { Resend } from 'resend'
 const SUPABASE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co"
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!
 const BUCKET = "submissions"
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData()
@@ -66,6 +65,7 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+  const resend = new Resend(process.env.RESEND_API_KEY)
   await resend.emails.send({
     from: 'Royal Oak Club <onboarding@resend.dev>',
     to: 'koen@koensmulders.nl',
