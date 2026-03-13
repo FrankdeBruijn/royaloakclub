@@ -64,6 +64,7 @@ export default function AdminPage() {
             </h1>
           </div>
           <div className="flex gap-3">
+            <Link href="/admin/submissions" className="px-6 py-3 border border-[#E8E2D9] text-[#888] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors rounded-sm">✉ Submissions</Link>
             <Link href="/admin/duplicates" className="px-6 py-3 border border-[#E8E2D9] text-[#888] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors rounded-sm">⊘ Find Duplicates</Link>
             <Link href="/admin/watch/new" className="px-6 py-3 bg-[#C9A84C] text-white text-[11px] tracking-[0.2em] uppercase hover:bg-[#B8973B] transition-colors rounded-sm">+ Add Watch</Link>
           </div>
