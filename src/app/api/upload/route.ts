@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
 
   const buffer = Buffer.from(await file.arrayBuffer())
 
-  // Bijsnijden naar vierkant 800x800, witte achtergrond
   const processed = await sharp(buffer)
     .resize(800, 800, {
       fit: 'contain',
@@ -30,7 +29,6 @@ export async function POST(request: NextRequest) {
 
   const filename = `${watchId}_${Date.now()}.jpg`
 
-  // Upload naar Supabase Storage met service key
   const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
     method: 'POST',
     headers: {
@@ -39,7 +37,7 @@ export async function POST(request: NextRequest) {
       'Content-Type': 'image/jpeg',
       'x-upsert': 'true'
     },
-    body: processed
+    body: new Uint8Array(processed)
   })
 
   if (!uploadRes.ok) {
@@ -47,7 +45,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: err }, { status: 500 })
   }
 
-  // Update watches tabel
   await supabase.from('watches').update({ image: filename }).eq('id', watchId)
 
   return NextResponse.json({ filename })
