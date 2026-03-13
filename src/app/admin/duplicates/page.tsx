@@ -37,7 +37,7 @@ export default function DuplicatesPage() {
     setLoading(true)
     const { data } = await supabase
       .from('watches')
-      .select('id, modelnaam, model_id, materiaal, image, jaar_geintroduceerd, type_uurwerk, productie_status')
+      .select('id, modelnaam, model_id, materiaal, image, jaar_geintroduceerd, type_uurwerk, productie_status, geslacht')
       .order('model_id')
 
     if (!data) { setLoading(false); return }
