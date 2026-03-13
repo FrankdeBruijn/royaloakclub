@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import ImageUploader from './ImageUploader'
+
+const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/public/watch-images"
 
 export default async function EditWatchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -54,8 +57,9 @@ export default async function EditWatchPage({ params }: { params: Promise<{ id: 
     { name: 'jaar_geintroduceerd', label: 'Year Introduced', value: watch.jaar_geintroduceerd },
     { name: 'prijs_euro', label: 'Price EU (€)', value: watch.prijs_euro },
     { name: 'prijs_dollar', label: 'Price USA ($)', value: watch.prijs_dollar },
-    { name: 'image', label: 'Image filename', value: watch.image, span: true },
   ]
+
+  const imageUrl = watch.image ? `${STORAGE_URL}/${encodeURIComponent(watch.image)}` : null
 
   return (
     <main className="min-h-screen bg-[#F8F6F2]">
@@ -63,34 +67,55 @@ export default async function EditWatchPage({ params }: { params: Promise<{ id: 
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
         <Link href="/admin" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">← Back to Admin</Link>
       </nav>
-      <div className="px-10 py-12 max-w-3xl">
+
+      <div className="px-10 py-12 max-w-5xl">
         <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C] mb-2">Admin — ID {id}</p>
         <h1 className="font-serif text-4xl font-light mb-10">{watch.modelnaam || 'Edit Watch'}</h1>
-        <form action={updateWatch} className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden mb-6">
-          <div className="px-8 py-5 border-b border-[#E8E2D9]">
-            <h2 className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C]">Edit Information</h2>
+
+        <div className="grid grid-cols-3 gap-8 mb-8">
+          {/* IMAGE UPLOADER */}
+          <div className="col-span-1">
+            <ImageUploader watchId={id} currentImage={imageUrl} currentFilename={watch.image} />
           </div>
-          <div className="p-8 grid grid-cols-2 gap-6">
-            {fields.map(f => (
-              <div key={f.name} className={f.span ? 'col-span-2' : ''}>
-                <label className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] block mb-2">{f.label}</label>
-                <input
-                  name={f.name}
-                  defaultValue={f.value ?? ''}
-                  className="w-full px-4 py-3 border border-[#E8E2D9] focus:border-[#C9A84C] outline-none bg-[#FAFAF8] text-[#1A1A1A] transition-colors"
-                />
+
+          {/* FORM */}
+          <div className="col-span-2">
+            <form action={updateWatch} className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden">
+              <div className="px-8 py-5 border-b border-[#E8E2D9]">
+                <h2 className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C]">Edit Information</h2>
               </div>
-            ))}
+              <div className="p-8 grid grid-cols-2 gap-5">
+                {fields.map(f => (
+                  <div key={f.name} className={f.span ? 'col-span-2' : ''}>
+                    <label className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] block mb-2">{f.label}</label>
+                    <input
+                      name={f.name}
+                      defaultValue={f.value ?? ''}
+                      className="w-full px-4 py-3 border border-[#E8E2D9] focus:border-[#C9A84C] outline-none bg-[#FAFAF8] text-[#1A1A1A] transition-colors text-sm"
+                    />
+                  </div>
+                ))}
+                <div className="col-span-2">
+                  <label className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] block mb-2">Image filename</label>
+                  <input
+                    name="image"
+                    defaultValue={watch.image ?? ''}
+                    className="w-full px-4 py-3 border border-[#E8E2D9] focus:border-[#C9A84C] outline-none bg-[#FAFAF8] text-[#1A1A1A] transition-colors text-sm font-mono"
+                    placeholder="15500ST.OO.1220ST.01.jpg"
+                  />
+                </div>
+              </div>
+              <div className="px-8 py-6 border-t border-[#E8E2D9] flex gap-4">
+                <button type="submit" className="px-8 py-3 bg-[#C9A84C] text-white text-[11px] tracking-[0.2em] uppercase hover:bg-[#B8973B] transition-colors">
+                  Save Changes
+                </button>
+                <Link href="/admin" className="px-8 py-3 border border-[#E8E2D9] text-[#888] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] transition-colors">
+                  Cancel
+                </Link>
+              </div>
+            </form>
           </div>
-          <div className="px-8 py-6 border-t border-[#E8E2D9] flex gap-4">
-            <button type="submit" className="px-8 py-3 bg-[#C9A84C] text-white text-[11px] tracking-[0.2em] uppercase hover:bg-[#B8973B] transition-colors">
-              Save Changes
-            </button>
-            <Link href="/admin" className="px-8 py-3 border border-[#E8E2D9] text-[#888] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] transition-colors">
-              Cancel
-            </Link>
-          </div>
-        </form>
+        </div>
 
         {/* DELETE */}
         <div className="bg-white rounded-xl border border-red-100 overflow-hidden">
