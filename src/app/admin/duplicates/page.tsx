@@ -43,7 +43,7 @@ export default function DuplicatesPage() {
 
     const map = new Map<string, Watch[]>()
     for (const w of data) {
-      const key = `${w.model_id ?? ""}|${w.modelnaam ?? ""}|${w.materiaal ?? ""}|${w.type_uurwerk ?? ""}|${w.geslacht ?? ""}`
+      const key = `${w.model_id ?? ""}|${w.modelnaam ?? ""}|${w.materiaal ?? ""}|${w.type_uurwerk ?? ""}|${w.geslacht ?? ""}|${w.jaar_geintroduceerd ?? ""}`
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(w)
     }
@@ -83,7 +83,7 @@ export default function DuplicatesPage() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <h1 className="font-serif text-4xl font-light mb-2">Duplicate Finder</h1>
-            <p className="text-[11px] text-[#AAA]">Gebaseerd op zelfde Reference + Model + Materiaal</p>
+            <p className="text-[11px] text-[#AAA]">Gebaseerd op zelfde Reference + Model + Materiaal + Caliber + Geslacht</p>
           </div>
           {!loading && (
             <div className="text-right">
