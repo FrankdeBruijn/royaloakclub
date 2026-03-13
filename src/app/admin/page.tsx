@@ -68,6 +68,7 @@ export default function AdminPage() {
           </Link>
         </div>
 
+          <Link href="/admin/duplicates" className="px-6 py-3 border border-[#E8E2D9] text-[#888] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors rounded-sm">⊘ Find Duplicates</Link>
         {/* SEARCH */}
         <div className="flex border border-[#D0C9BC] focus-within:border-[#C9A84C] transition-colors bg-white max-w-xl mb-6">
           <span className="px-4 flex items-center text-[#CCC]">
