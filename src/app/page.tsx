@@ -26,6 +26,7 @@ export default async function HomePage() {
         <span className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</span>
         <div className="flex gap-8 items-center">
           <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Database</Link>
+          <Link href="/login" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Login</Link>
           <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase px-5 py-2.5 bg-[#C9A84C] text-white hover:bg-[#B8973B] transition-colors">
             Explore →
           </Link>
