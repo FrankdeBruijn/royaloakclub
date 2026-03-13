@@ -63,12 +63,11 @@ export default function AdminPage() {
               Manage Watches <span className="font-mono text-2xl text-[#CCC] ml-3">{total}</span>
             </h1>
           </div>
-          <Link href="/admin/watch/new" className="px-6 py-3 bg-[#C9A84C] text-white text-[11px] tracking-[0.2em] uppercase hover:bg-[#B8973B] transition-colors rounded-sm">
-            + Add Watch
-          </Link>
+          <div className="flex gap-3">
+            <Link href="/admin/duplicates" className="px-6 py-3 border border-[#E8E2D9] text-[#888] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors rounded-sm">⊘ Find Duplicates</Link>
+            <Link href="/admin/watch/new" className="px-6 py-3 bg-[#C9A84C] text-white text-[11px] tracking-[0.2em] uppercase hover:bg-[#B8973B] transition-colors rounded-sm">+ Add Watch</Link>
+          </div>
         </div>
-
-          <Link href="/admin/duplicates" className="px-6 py-3 border border-[#E8E2D9] text-[#888] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors rounded-sm">⊘ Find Duplicates</Link>
         {/* SEARCH */}
         <div className="flex border border-[#D0C9BC] focus-within:border-[#C9A84C] transition-colors bg-white max-w-xl mb-6">
           <span className="px-4 flex items-center text-[#CCC]">
