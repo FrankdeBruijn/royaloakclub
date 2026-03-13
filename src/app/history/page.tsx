@@ -5,7 +5,10 @@ export default function HistoryPage() {
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
       <nav className="sticky top-0 z-50 px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
-        <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Browse Archive</Link>
+        <div className="flex items-center gap-6">
+          <Link href="/" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Home</Link>
+          <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">Browse Archive</Link>
+        </div>
       </nav>
 
       <div className="px-10 py-16 max-w-3xl">
