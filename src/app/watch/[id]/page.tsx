@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import GalleryClient from './GalleryClient'
 
 const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/public/watch-images"
 
@@ -10,7 +11,17 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
   const { data: watch } = await supabase.from('watches').select('*').eq('id', id).single()
   if (!watch) notFound()
 
-  const imageUrl = watch.image ? `${STORAGE_URL}/${encodeURIComponent(watch.image)}` : null
+  const { data: extraImages } = await supabase
+    .from('watch_images')
+    .select('*')
+    .eq('watch_id', id)
+    .order('sort_order', { ascending: true })
+
+  const mainImageUrl = watch.image ? `${STORAGE_URL}/${encodeURIComponent(watch.image)}` : null
+  const allImages = [
+    ...(mainImageUrl ? [mainImageUrl] : []),
+    ...(extraImages || []).map(img => `${STORAGE_URL}/${encodeURIComponent(img.filename)}`)
+  ]
 
   const specs = [
     { label: 'Reference', value: watch.model_id },
@@ -44,21 +55,9 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
       <div className="px-6 md:px-10 py-16 max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
 
-          {/* IMAGE */}
+          {/* GALLERY */}
           <div className="md:sticky md:top-28">
-            <div className="bg-white rounded-2xl shadow-lg shadow-black/5 p-12 flex items-center justify-center aspect-square relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#C9A84C]/3 to-transparent" />
-              {imageUrl ? (
-                <Image src={imageUrl} alt={watch.modelnaam || 'Royal Oak'} width={500} height={500} className="object-contain relative z-10" unoptimized />
-              ) : (
-                <div className="text-center">
-                  <div className="w-24 h-24 mx-auto mb-4 opacity-10">
-                    <svg viewBox="0 0 200 200" fill="none"><polygon points="70,5 130,5 195,70 195,130 130,195 70,195 5,130 5,70" stroke="#C9A84C" strokeWidth="2" fill="none" /></svg>
-                  </div>
-                  <p className="text-[10px] tracking-[0.2em] uppercase text-[#CCC]">No image available</p>
-                </div>
-              )}
-            </div>
+            <GalleryClient images={allImages} modelName={watch.modelnaam || 'Royal Oak'} />
           </div>
 
           {/* DETAILS */}
@@ -69,7 +68,6 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
               <p className="font-mono text-base text-[#C9A84C] tracking-wider">{watch.model_id}</p>
             </div>
 
-            {/* DESCRIPTION */}
             {watch.description && (
               <div className="mb-8 p-6 bg-white rounded-xl border border-[#E8E2D9]">
                 <div className="flex items-center gap-3 mb-3">
@@ -80,7 +78,6 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
               </div>
             )}
 
-            {/* PRICE */}
             {(watch.prijs_euro || watch.prijs_dollar) && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 p-6 bg-white rounded-xl border border-[#E8E2D9]">
                 {watch.prijs_euro && (
@@ -98,7 +95,6 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
               </div>
             )}
 
-            {/* SPECS */}
             <div className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E8E2D9] flex items-center gap-3">
                 <span className="block w-4 h-px bg-[#C9A84C]" />
