@@ -7,36 +7,53 @@ const SUPABASE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co"
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!
 const BUCKET = "submissions"
 
+async function uploadImage(buffer: Buffer, filename: string): Promise<boolean> {
+  const processed = await sharp(buffer)
+    .resize(800, 800, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
+    .jpeg({ quality: 90 })
+    .toBuffer()
+
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'image/jpeg',
+      'x-upsert': 'true'
+    },
+    body: new Uint8Array(processed)
+  })
+  return res.ok
+}
+
 export async function POST(request: NextRequest) {
   const formData = await request.formData()
-  
+
   const honeypot = formData.get('honeypot') as string
   if (honeypot) return NextResponse.json({ error: 'Bot detected' }, { status: 400 })
 
+  // Hoofdfoto
   const file = formData.get('file') as File | null
   let filename = null
+  const extraFilenames: string[] = []
 
   if (file && file.size > 0) {
     const buffer = Buffer.from(await file.arrayBuffer())
-    const processed = await sharp(buffer)
-      .resize(800, 800, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
-      .jpeg({ quality: 90 })
-      .toBuffer()
-
     filename = `submission_${Date.now()}.jpg`
+    const ok = await uploadImage(buffer, filename)
+    if (!ok) return NextResponse.json({ error: 'Image upload failed' }, { status: 500 })
+  }
 
-    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filename}`, {
-      method: 'POST',
-      headers: {
-        'apikey': SERVICE_KEY,
-        'Authorization': `Bearer ${SERVICE_KEY}`,
-        'Content-Type': 'image/jpeg',
-        'x-upsert': 'true'
-      },
-      body: new Uint8Array(processed)
-    })
-
-    if (!uploadRes.ok) return NextResponse.json({ error: 'Image upload failed' }, { status: 500 })
+  // Extra foto's
+  let i = 1
+  while (true) {
+    const extraFile = formData.get(`file_${i}`) as File | null
+    if (!extraFile || extraFile.size === 0) break
+    const buffer = Buffer.from(await extraFile.arrayBuffer())
+    const extraFilename = `submission_extra_${Date.now()}_${i}.jpg`
+    const ok = await uploadImage(buffer, extraFilename)
+    if (ok) extraFilenames.push(extraFilename)
+    i++
   }
 
   const supabase = await createClient()
@@ -60,6 +77,7 @@ export async function POST(request: NextRequest) {
     description: formData.get('description') as string || null,
     ingediend_door,
     image: filename,
+    extra_images: extraFilenames.length > 0 ? extraFilenames : null,
     status: 'pending'
   })
 
@@ -84,12 +102,16 @@ export async function POST(request: NextRequest) {
             <td style="padding: 10px 0;">${model_id}</td>
           </tr>
           <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 10px 0; color: #888;">Foto's</td>
+            <td style="padding: 10px 0;">${(filename ? 1 : 0) + extraFilenames.length}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px 0; color: #888;">Ingediend door</td>
             <td style="padding: 10px 0;">${ingediend_door}</td>
           </tr>
         </table>
         <div style="margin-top: 32px;">
-          <a href="https://royaloakclub.vercel.app/admin/submissions" 
+          <a href="https://royaloakclub.vercel.app/admin/submissions"
              style="background: #C9A84C; color: white; padding: 12px 28px; text-decoration: none; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
             Bekijk submission →
           </a>
