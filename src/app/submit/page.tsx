@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 
 const FIELDS = [
@@ -22,19 +22,28 @@ const FIELDS = [
 export default function SubmitPage() {
   const [form, setForm] = useState<Record<string, string>>({})
   const [description, setDescription] = useState('')
-  const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const [previews, setPreviews] = useState<string[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [isHuman, setIsHuman] = useState(false)
   const [honeypot, setHoneypot] = useState('')
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  function handleFile(f: File) {
-    setFile(f)
-    const reader = new FileReader()
-    reader.onload = e => setPreview(e.target?.result as string)
-    reader.readAsDataURL(f)
+  function handleFiles(newFiles: File[]) {
+    const imageFiles = newFiles.filter(f => f.type.startsWith('image/'))
+    setFiles(prev => [...prev, ...imageFiles])
+    imageFiles.forEach(f => {
+      const reader = new FileReader()
+      reader.onload = e => setPreviews(prev => [...prev, e.target?.result as string])
+      reader.readAsDataURL(f)
+    })
+  }
+
+  function removeFile(index: number) {
+    setFiles(prev => prev.filter((_, i) => i !== index))
+    setPreviews(prev => prev.filter((_, i) => i !== index))
   }
 
   async function handleSubmit() {
@@ -47,7 +56,7 @@ export default function SubmitPage() {
     const formData = new FormData()
     Object.entries(form).forEach(([k, v]) => formData.append(k, v))
     formData.append('description', description)
-    if (file) formData.append('file', file)
+    files.forEach((f, i) => formData.append(i === 0 ? 'file' : `file_${i}`, f))
 
     const res = await fetch('/api/submit', { method: 'POST', body: formData })
     const data = await res.json()
@@ -78,33 +87,51 @@ export default function SubmitPage() {
       <div className="px-6 md:px-10 py-12 max-w-5xl">
         <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C] mb-2">Community</p>
         <h1 className="font-serif text-4xl font-light mb-3">Submit a Watch</h1>
-        <p className="text-sm text-[#888] mb-10">Know a Royal Oak that's missing from our archive? Submit it below and we'll review it for inclusion.</p>
+        <p className="text-sm text-[#888] mb-10">Know a Royal Oak that is missing from our archive? Submit it below and we will review it for inclusion.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           <div className="col-span-1">
-            <div className="bg-white rounded-xl border border-[#E8E2D9] p-6 flex flex-col items-center">
-              <p className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] mb-4">Photo</p>
+            <div className="bg-white rounded-xl border border-[#E8E2D9] p-6">
+              <p className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] mb-4 text-center">Photos ({files.length})</p>
+
+              {previews.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {previews.map((p, i) => (
+                    <div key={i} className="relative aspect-square bg-[#F8F6F2] rounded overflow-hidden group">
+                      <img src={p} alt="" className="object-contain p-2 w-full h-full" />
+                      {i === 0 && (
+                        <div className="absolute top-1 left-1 bg-[#C9A84C] text-white text-[8px] px-1.5 py-0.5 rounded">Main</div>
+                      )}
+                      <button onClick={() => removeFile(i)}
+                        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        x
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div
-                className="aspect-square w-full bg-[#F8F6F2] rounded-lg flex items-center justify-center overflow-hidden mb-4 cursor-pointer border-2 border-dashed border-transparent hover:border-[#C9A84C] transition-colors"
-                onClick={() => document.getElementById('fileInput')?.click()}
-                onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
+                className="w-full bg-[#F8F6F2] rounded-lg flex items-center justify-center cursor-pointer border-2 border-dashed border-transparent hover:border-[#C9A84C] transition-colors mb-4 py-8"
+                onClick={() => inputRef.current?.click()}
+                onDrop={e => { e.preventDefault(); handleFiles(Array.from(e.dataTransfer.files)) }}
                 onDragOver={e => e.preventDefault()}
               >
-                {preview ? (
-                  <img src={preview} alt="Preview" className="object-contain p-4 w-full h-full" />
-                ) : (
-                  <div className="text-center p-4">
-                    <div className="w-10 h-10 mx-auto opacity-20 mb-3">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    </div>
-                    <p className="text-[10px] text-[#CCC]">Click or drag photo</p>
-                    <p className="text-[9px] text-[#DDD] mt-1">Optional but recommended</p>
+                <div className="text-center p-4">
+                  <div className="w-10 h-10 mx-auto opacity-20 mb-3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                   </div>
-                )}
+                  <p className="text-[10px] text-[#CCC]">Click or drag photos</p>
+                  <p className="text-[9px] text-[#DDD] mt-1">Multiple photos allowed</p>
+                </div>
               </div>
-              <input id="fileInput" type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }} />
-              <button onClick={() => document.getElementById('fileInput')?.click()} className="w-full py-2.5 border border-[#E8E2D9] text-[10px] tracking-[0.2em] uppercase text-[#888] hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors">
-                {file ? '✓ ' + file.name.substring(0, 20) : 'Choose Photo'}
+
+              <input ref={inputRef} type="file" accept="image/*" multiple className="hidden"
+                onChange={e => { if (e.target.files) handleFiles(Array.from(e.target.files)) }} />
+
+              <button onClick={() => inputRef.current?.click()}
+                className="w-full py-2.5 border border-[#E8E2D9] text-[10px] tracking-[0.2em] uppercase text-[#888] hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors">
+                + Add Photos
               </button>
             </div>
           </div>
@@ -115,7 +142,6 @@ export default function SubmitPage() {
                 <h2 className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C]">Watch Information</h2>
               </div>
               <div className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-                {/* Honeypot */}
                 <input type="text" value={honeypot} onChange={e => setHoneypot(e.target.value)} style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
                 {FIELDS.map(f => (
                   <div key={f.name} className={f.span ? 'col-span-2' : ''}>
