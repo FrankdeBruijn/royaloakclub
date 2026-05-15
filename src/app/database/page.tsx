@@ -23,7 +23,7 @@ export default function DatabasePage() {
     let query = supabase.from('watches').select('*', { count: 'exact' })
     if (activeType !== 'All') query = query.eq('type', activeType)
     if (search) query = query.or(`modelnaam.ilike.%${search}%,model_id.ilike.%${search}%,type_uurwerk.ilike.%${search}%`)
-    const { data, count } = await query.order('id').range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
+    const { data, count } = await query.order('model_id').range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
     setWatches(data || [])
     setTotal(count || 0)
     setLoading(false)
