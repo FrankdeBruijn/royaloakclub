@@ -149,7 +149,7 @@ export default function DatabasePage() {
                   </div>
                   <div className="p-5">
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="font-serif text-base leading-tight text-[#1A1A1A] min-w-0 break-words">{decodeHtml(w.modelnaam) || '—'}</h3>
+                      <h3 className="font-serif text-sm leading-tight text-[#1A1A1A] min-w-0 line-clamp-2">{decodeHtml(w.modelnaam) || '—'}</h3>
                       <span className="text-[8px] tracking-[0.1em] uppercase px-1.5 py-0.5 bg-[#F0EDE8] text-[#999] rounded-sm ml-2 flex-shrink-0">{w.type?.replace('RoyalOak ', '') || '—'}</span>
                     </div>
                     <p className="font-mono text-[10px] text-[#C9A84C] mb-3 break-all">{getReference(w)}</p>
