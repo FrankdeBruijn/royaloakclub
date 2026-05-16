@@ -46,7 +46,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
   ]
 
   return (
-    <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
+    <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A] overflow-x-hidden">
       <nav className="sticky top-0 z-50 px-6 md:px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
         <Link href="/database" className="text-sm md:text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors px-3 py-2 md:px-0 md:py-0">← Archive</Link>
