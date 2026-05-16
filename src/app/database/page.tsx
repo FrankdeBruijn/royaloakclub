@@ -19,8 +19,7 @@ const decodeHtml = (str: string | null | undefined): string => {
 
 const getReference = (w: Watch): string => {
   if (!w.image) return w.model_id || '—'
-  const stem = w.image.replace(/\.[^.]+$/, '')
-  return /^\d{5}/.test(stem) ? stem : (w.model_id || '—')
+  return w.image.replace(/\.[^.]+$/, '')
 }
 
 function WatchImage({ src, alt }: { src: string, alt: string }) {
