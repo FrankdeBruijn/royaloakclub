@@ -5,6 +5,8 @@ import Image from 'next/image'
 
 const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/public/watch-images"
 
+const imageUrl = (path: string) => `${STORAGE_URL}/${path.split('/').map(encodeURIComponent).join('/')}`
+
 async function getStats() {
   const { count } = await supabase.from('watches').select('*', { count: 'exact', head: true })
   const { data: calibers } = await supabase.from('watches').select('type_uurwerk').not('type_uurwerk', 'is', null)
@@ -60,7 +62,7 @@ export default async function HomePage() {
             <div className="relative bg-white rounded-2xl shadow-2xl shadow-black/10 p-12 flex items-center justify-center aspect-square">
               {recent[0]?.image ? (
                 <Image
-                  src={`${STORAGE_URL}/${encodeURIComponent(recent[0].image)}`}
+                  src={imageUrl(recent[0].image)}
                   alt={recent[0].modelnaam || 'Royal Oak'}
                   width={500}
                   height={500}
@@ -76,7 +78,7 @@ export default async function HomePage() {
             <div className="absolute -bottom-4 -right-4 bg-white rounded-xl shadow-lg p-4 border border-[#E8E2D9]">
               <p className="text-[9px] tracking-[0.2em] uppercase text-[#AAA] mb-1">Latest addition</p>
               <p className="font-serif text-sm text-[#1A1A1A]">{recent[0]?.modelnaam || '—'}</p>
-              <p className="font-mono text-[10px] text-[#C9A84C]">{recent[0]?.model_id || '—'}</p>
+              <p className="font-mono text-[10px] text-[#C9A84C]">{recent[0]?.image ? recent[0].image.replace(/\.[^.]+$/, '') : recent[0]?.model_id || '—'}</p>
             </div>
           </div>
         </div>
@@ -93,14 +95,14 @@ export default async function HomePage() {
             View all {stats.total} →
           </Link>
         </div>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {recent.map((w: any) => (
             <Link key={w.id} href={`/watch/${w.id}`} className="group bg-[#F8F6F2] rounded-xl overflow-hidden hover:shadow-xl hover:shadow-black/8 transition-all duration-300">
               <div className="aspect-square bg-white flex items-center justify-center p-8 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[#C9A84C]/0 group-hover:bg-[#C9A84C]/3 transition-colors" />
                 {w.image ? (
                   <Image
-                    src={`${STORAGE_URL}/${encodeURIComponent(w.image)}`}
+                    src={imageUrl(w.image)}
                     alt={w.modelnaam || 'Royal Oak'}
                     width={300}
                     height={300}
@@ -115,10 +117,10 @@ export default async function HomePage() {
               </div>
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-serif text-lg text-[#1A1A1A]">{w.modelnaam}</h3>
+                  <h3 className="font-serif text-lg text-[#1A1A1A] min-w-0 break-words">{w.modelnaam}</h3>
                   <span className="text-[8px] tracking-[0.1em] uppercase px-2 py-1 bg-[#E8E2D9] text-[#888] rounded-sm">{w.type?.replace('RoyalOak ', '') || '—'}</span>
                 </div>
-                <p className="font-mono text-[10px] text-[#C9A84C] mb-4">{w.model_id}</p>
+                <p className="font-mono text-[10px] text-[#C9A84C] mb-4">{w.image ? w.image.replace(/\.[^.]+$/, '') : w.model_id}</p>
                 <div className="flex justify-between text-[11px] text-[#AAA] border-t border-[#E8E2D9] pt-4">
                   <span>{w.jaar_geintroduceerd || '—'}</span>
                   <span>{w.type_uurwerk || '—'}</span>

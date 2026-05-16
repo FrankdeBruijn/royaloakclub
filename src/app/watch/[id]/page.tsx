@@ -1,10 +1,16 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import GalleryClient from './GalleryClient'
 
 const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/public/watch-images"
+
+const imageUrl = (path: string) => `${STORAGE_URL}/${path.split('/').map(encodeURIComponent).join('/')}`
+
+const decodeHtml = (str: string | null | undefined): string => {
+  if (!str) return ''
+  return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+}
 
 export default async function WatchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -17,21 +23,23 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     .eq('watch_id', id)
     .order('sort_order', { ascending: true })
 
-  const mainImageUrl = watch.image ? `${STORAGE_URL}/${encodeURIComponent(watch.image)}` : null
+  const mainImageUrl = watch.image ? imageUrl(watch.image) : null
   const allImages = [
     ...(mainImageUrl ? [mainImageUrl] : []),
     ...(extraImages || []).map(img => `${STORAGE_URL}/${encodeURIComponent(img.filename)}`)
   ]
 
+  const fullReference = watch.image ? watch.image.replace(/\.[^.]+$/, '') : watch.model_id
+
   const specs = [
-    { label: 'Reference', value: watch.model_id },
-    { label: 'Type', value: watch.type },
-    { label: 'Gender', value: watch.geslacht },
-    { label: 'Case Material', value: watch.materiaal },
+    { label: 'Reference', value: fullReference },
+    { label: 'Type', value: decodeHtml(watch.type) },
+    { label: 'Gender', value: decodeHtml(watch.geslacht) },
+    { label: 'Case Material', value: decodeHtml(watch.materiaal) },
     { label: 'Case Size', value: watch.diameter_kast ? `${watch.diameter_kast}mm` : null },
-    { label: 'Caliber', value: watch.type_uurwerk },
-    { label: 'Movement', value: watch.movement },
-    { label: 'Status', value: watch.productie_status },
+    { label: 'Caliber', value: decodeHtml(watch.type_uurwerk) },
+    { label: 'Movement', value: decodeHtml(watch.movement) },
+    { label: 'Status', value: decodeHtml(watch.productie_status) },
     { label: 'Year Introduced', value: watch.jaar_geintroduceerd },
     { label: 'Price EU', value: watch.prijs_euro ? `€${parseInt(watch.prijs_euro).toLocaleString()}` : null },
     { label: 'Price USA', value: watch.prijs_dollar ? `$${parseInt(watch.prijs_dollar).toLocaleString()}` : null },
@@ -41,7 +49,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A]">
       <nav className="sticky top-0 z-50 px-6 md:px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
-        <Link href="/database" className="text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">← Back to Archive</Link>
+        <Link href="/database" className="text-sm md:text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors px-3 py-2 md:px-0 md:py-0">← Archive</Link>
       </nav>
 
       <div className="px-6 md:px-10 py-4 flex items-center gap-2 text-[10px] tracking-[0.15em] uppercase text-[#BBB] border-b border-[#E8E2D9] bg-white">
@@ -63,9 +71,9 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
           {/* DETAILS */}
           <div>
             <div className="mb-8">
-              <span className="text-[10px] tracking-[0.2em] uppercase px-3 py-1.5 bg-[#C9A84C]/10 text-[#C9A84C] rounded-sm inline-block mb-4">{watch.type}</span>
-              <h1 className="font-serif text-5xl font-light leading-tight mb-3">{watch.modelnaam}</h1>
-              <p className="font-mono text-base text-[#C9A84C] tracking-wider">{watch.model_id}</p>
+              <span className="text-[10px] tracking-[0.2em] uppercase px-3 py-1.5 bg-[#C9A84C]/10 text-[#C9A84C] rounded-sm inline-block mb-4">{decodeHtml(watch.type)}</span>
+              <h1 className="font-serif text-3xl md:text-5xl font-light leading-tight mb-3 break-words">{decodeHtml(watch.modelnaam)}</h1>
+              <p className="font-mono text-base text-[#C9A84C] tracking-wider break-all">{fullReference}</p>
             </div>
 
             {watch.description && (
@@ -74,7 +82,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
                   <span className="block w-4 h-px bg-[#C9A84C]" />
                   <h2 className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C]">About</h2>
                 </div>
-                <p className="text-sm leading-relaxed text-[#555]">{watch.description}</p>
+                <p className="text-sm leading-relaxed text-[#555]">{decodeHtml(watch.description)}</p>
               </div>
             )}
 

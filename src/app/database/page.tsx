@@ -10,6 +10,13 @@ const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/
 const TYPES = ['All', 'RoyalOak', 'RoyalOak OffShore', 'RoyalOak Lady', 'Concept', 'Pocketwatch']
 const PAGE_SIZE = 48
 
+const imageUrl = (path: string) => `${STORAGE_URL}/${path.split('/').map(encodeURIComponent).join('/')}`
+
+const decodeHtml = (str: string | null | undefined): string => {
+  if (!str) return ''
+  return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+}
+
 export default function DatabasePage() {
   const [watches, setWatches] = useState<Watch[]>([])
   const [total, setTotal] = useState(0)
@@ -17,6 +24,12 @@ export default function DatabasePage() {
   const [search, setSearch] = useState('')
   const [activeType, setActiveType] = useState('All')
   const [page, setPage] = useState(0)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const type = params.get('type')
+    if (type && TYPES.includes(type)) setActiveType(type)
+  }, [])
 
   const fetchWatches = useCallback(async () => {
     setLoading(true)
@@ -102,7 +115,7 @@ export default function DatabasePage() {
                     <div className="absolute inset-0 bg-[#C9A84C]/0 group-hover:bg-[#C9A84C]/3 transition-colors" />
                     {w.image ? (
                       <Image
-                        src={`${STORAGE_URL}/${encodeURIComponent(w.image)}`}
+                        src={imageUrl(w.image)}
                         alt={w.modelnaam || 'Royal Oak'}
                         width={200}
                         height={200}
@@ -117,10 +130,10 @@ export default function DatabasePage() {
                   </div>
                   <div className="p-5">
                     <div className="flex justify-between items-start mb-1">
-                      <h3 className="font-serif text-base leading-tight text-[#1A1A1A]">{w.modelnaam || '—'}</h3>
+                      <h3 className="font-serif text-base leading-tight text-[#1A1A1A] min-w-0 break-words">{decodeHtml(w.modelnaam) || '—'}</h3>
                       <span className="text-[8px] tracking-[0.1em] uppercase px-1.5 py-0.5 bg-[#F0EDE8] text-[#999] rounded-sm ml-2 flex-shrink-0">{w.type?.replace('RoyalOak ', '') || '—'}</span>
                     </div>
-                    <p className="font-mono text-[10px] text-[#C9A84C] mb-3">{w.model_id || '—'}</p>
+                    <p className="font-mono text-[10px] text-[#C9A84C] mb-3 break-all">{w.image ? w.image.replace(/\.[^.]+$/, '') : w.model_id || '—'}</p>
                     <div className="flex justify-between text-[10px] text-[#BBB] border-t border-[#F0EDE8] pt-3">
                       <span>{w.jaar_geintroduceerd || '—'}</span>
                       <span>{w.type_uurwerk || '—'}</span>
