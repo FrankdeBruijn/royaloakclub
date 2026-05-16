@@ -17,6 +17,26 @@ const decodeHtml = (str: string | null | undefined): string => {
   return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
 }
 
+const getReference = (w: Watch): string => {
+  if (!w.image) return w.model_id || '—'
+  const stem = w.image.replace(/\.[^.]+$/, '')
+  return /^\d{5}/.test(stem) ? stem : (w.model_id || '—')
+}
+
+function WatchImage({ src, alt }: { src: string, alt: string }) {
+  const [failed, setFailed] = useState(false)
+  if (failed) return (
+    <div className="w-16 h-16 opacity-10">
+      <svg viewBox="0 0 200 200" fill="none"><polygon points="70,5 130,5 195,70 195,130 130,195 70,195 5,130 5,70" stroke="#C9A84C" strokeWidth="2" fill="none" /></svg>
+    </div>
+  )
+  return (
+    <Image src={src} alt={alt} width={200} height={200}
+      className="object-contain group-hover:scale-105 transition-transform duration-500"
+      unoptimized onError={() => setFailed(true)} />
+  )
+}
+
 export default function DatabasePage() {
   const [watches, setWatches] = useState<Watch[]>([])
   const [total, setTotal] = useState(0)
@@ -114,14 +134,7 @@ export default function DatabasePage() {
                   <div className="aspect-square bg-[#F8F6F2] flex items-center justify-center p-6 relative overflow-hidden">
                     <div className="absolute inset-0 bg-[#C9A84C]/0 group-hover:bg-[#C9A84C]/3 transition-colors" />
                     {w.image ? (
-                      <Image
-                        src={imageUrl(w.image)}
-                        alt={w.modelnaam || 'Royal Oak'}
-                        width={200}
-                        height={200}
-                        className="object-contain group-hover:scale-105 transition-transform duration-500"
-                        unoptimized
-                      />
+                      <WatchImage src={imageUrl(w.image)} alt={w.modelnaam || 'Royal Oak'} />
                     ) : (
                       <div className="w-16 h-16 opacity-10">
                         <svg viewBox="0 0 200 200" fill="none"><polygon points="70,5 130,5 195,70 195,130 130,195 70,195 5,130 5,70" stroke="#C9A84C" strokeWidth="2" fill="none" /></svg>
@@ -133,7 +146,7 @@ export default function DatabasePage() {
                       <h3 className="font-serif text-base leading-tight text-[#1A1A1A] min-w-0 break-words">{decodeHtml(w.modelnaam) || '—'}</h3>
                       <span className="text-[8px] tracking-[0.1em] uppercase px-1.5 py-0.5 bg-[#F0EDE8] text-[#999] rounded-sm ml-2 flex-shrink-0">{w.type?.replace('RoyalOak ', '') || '—'}</span>
                     </div>
-                    <p className="font-mono text-[10px] text-[#C9A84C] mb-3 break-all">{w.image ? w.image.replace(/\.[^.]+$/, '') : w.model_id || '—'}</p>
+                    <p className="font-mono text-[10px] text-[#C9A84C] mb-3 break-all">{getReference(w)}</p>
                     <div className="flex justify-between text-[10px] text-[#BBB] border-t border-[#F0EDE8] pt-3">
                       <span>{w.jaar_geintroduceerd || '—'}</span>
                       <span>{w.type_uurwerk || '—'}</span>

@@ -29,7 +29,8 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     ...(extraImages || []).map(img => `${STORAGE_URL}/${encodeURIComponent(img.filename)}`)
   ]
 
-  const fullReference = watch.image ? watch.image.replace(/\.[^.]+$/, '') : watch.model_id
+  const stem = watch.image ? watch.image.replace(/\.[^.]+$/, '') : null
+  const fullReference = (stem && /^\d{5}/.test(stem)) ? stem : watch.model_id
 
   const specs = [
     { label: 'Reference', value: fullReference },
