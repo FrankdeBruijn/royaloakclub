@@ -69,11 +69,11 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
           </div>
 
           {/* DETAILS */}
-          <div>
+          <div className="min-w-0">
             <div className="mb-8">
               <span className="text-[10px] tracking-[0.2em] uppercase px-3 py-1.5 bg-[#C9A84C]/10 text-[#C9A84C] rounded-sm inline-block mb-4">{decodeHtml(watch.type)}</span>
               <h1 className="font-serif text-3xl md:text-5xl font-light leading-tight mb-3 break-words">{decodeHtml(watch.modelnaam)}</h1>
-              <p className="font-mono text-base text-[#C9A84C] tracking-wider break-all">{fullReference}</p>
+              <p className="font-mono text-sm md:text-base text-[#C9A84C] tracking-wide md:tracking-wider break-all">{fullReference}</p>
             </div>
 
             {watch.description && (
