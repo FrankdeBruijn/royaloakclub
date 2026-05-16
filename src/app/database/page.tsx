@@ -43,6 +43,7 @@ export default function DatabasePage() {
   const [search, setSearch] = useState('')
   const [activeType, setActiveType] = useState('All')
   const [page, setPage] = useState(0)
+  const [showNoImage, setShowNoImage] = useState(false)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -55,13 +56,14 @@ export default function DatabasePage() {
     let query = supabase.from('watches').select('*', { count: 'exact' })
     if (activeType !== 'All') query = query.eq('type', activeType)
     if (search) query = query.or(`modelnaam.ilike.%${search}%,model_id.ilike.%${search}%,type_uurwerk.ilike.%${search}%`)
+    if (!showNoImage) query = query.not('image', 'is', null)
     const { data, count } = await query.order('model_id').range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
     setWatches(data || [])
     setTotal(count || 0)
     setLoading(false)
-  }, [search, activeType, page])
+  }, [search, activeType, page, showNoImage])
 
-  useEffect(() => { setPage(0) }, [search, activeType])
+  useEffect(() => { setPage(0) }, [search, activeType, showNoImage])
   useEffect(() => { fetchWatches() }, [fetchWatches])
 
   return (
@@ -99,13 +101,18 @@ export default function DatabasePage() {
             />
             {search && <button onClick={() => setSearch('')} className="px-4 text-[#CCC] hover:text-[#1A1A1A]">✕</button>}
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap items-center">
             {TYPES.map(t => (
               <button key={t} onClick={() => setActiveType(t)}
                 className={`text-[10px] tracking-[0.15em] uppercase px-4 py-2 border transition-all rounded-sm ${activeType === t ? 'border-[#C9A84C] text-[#C9A84C] bg-[#C9A84C]/5' : 'border-[#D0C9BC] text-[#888] hover:border-[#C9A84C] bg-white'}`}>
                 {t}
               </button>
             ))}
+            <button onClick={() => setShowNoImage(v => !v)}
+              className={`text-[10px] tracking-[0.15em] uppercase px-4 py-2 border transition-all rounded-sm flex items-center gap-2 ${showNoImage ? 'border-[#C9A84C] text-[#C9A84C] bg-[#C9A84C]/5' : 'border-[#D0C9BC] text-[#888] hover:border-[#C9A84C] bg-white'}`}>
+              <span>{showNoImage ? '○' : '●'}</span>
+              No image
+            </button>
           </div>
         </div>
 
