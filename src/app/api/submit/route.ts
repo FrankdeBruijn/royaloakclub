@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY)
   await resend.emails.send({
     from: 'Royal Oak Club <onboarding@resend.dev>',
-    to: 'koen@koensmulders.com',
+    to: 'koen@koensmulders.nl',
     subject: `Nieuwe submission: ${modelnaam}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; color: #1A1A1A;">
