@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import GalleryClient from './GalleryClient'
+import BackButton from './BackButton'
 
 const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/public/watch-images"
 
@@ -61,7 +62,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     <main className="min-h-screen bg-[#F8F6F2] text-[#1A1A1A] overflow-x-hidden">
       <nav className="sticky top-0 z-50 px-6 md:px-10 py-5 flex justify-between items-center bg-white/95 backdrop-blur border-b border-[#E8E2D9]">
         <Link href="/" className="font-serif text-xl tracking-[0.15em] text-[#1A1A1A]">ROYAL OAK CLUB</Link>
-        <Link href="/database" className="text-sm md:text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors px-3 py-2 md:px-0 md:py-0">← Archive</Link>
+        <BackButton className="text-sm md:text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors px-3 py-2 md:px-0 md:py-0 cursor-pointer">← Archive</BackButton>
       </nav>
 
       <div className="px-6 md:px-10 py-4 flex items-center gap-2 text-[10px] tracking-[0.15em] uppercase text-[#BBB] border-b border-[#E8E2D9] bg-white">
@@ -129,7 +130,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div className="mt-8">
-              <Link href="/database" className="inline-flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors">
+              <BackButton className="inline-flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors cursor-pointer">
                 <span>←</span> Back to Archive
               </Link>
             </div>
