@@ -122,9 +122,8 @@ export default async function HomePage() {
                 </div>
                 <p className="font-mono text-[10px] text-[#C9A84C] mb-4">{w.image ? w.image.replace(/\.[^.]+$/, '') : w.model_id}</p>
                 <div className="flex justify-between text-[11px] text-[#AAA] border-t border-[#E8E2D9] pt-4">
-                  <span>{w.jaar_geintroduceerd || '—'}</span>
-                  <span>{w.type_uurwerk || '—'}</span>
-                  <span>{w.diameter_kast ? `${w.diameter_kast}mm` : '—'}</span>
+                  <span>{w.jaar_geintroduceerd ? `Year introduced: ${w.jaar_geintroduceerd}` : '—'}</span>
+                  <span>{w.diameter_kast ? `Case size: ${w.diameter_kast}mm` : '—'}</span>
                 </div>
               </div>
             </Link>

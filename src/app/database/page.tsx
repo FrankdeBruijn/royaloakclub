@@ -153,9 +153,8 @@ export default function DatabasePage() {
                     </div>
                     <p className="font-mono text-[10px] text-[#C9A84C] mb-3 break-all">{getReference(w)}</p>
                     <div className="flex justify-between text-[10px] text-[#BBB] border-t border-[#F0EDE8] pt-3">
-                      <span>{w.jaar_geintroduceerd || '—'}</span>
-                      <span>{w.type_uurwerk || '—'}</span>
-                      <span>{w.diameter_kast ? `${w.diameter_kast}mm` : '—'}</span>
+                      <span>{w.jaar_geintroduceerd ? `Year introduced: ${w.jaar_geintroduceerd}` : '—'}</span>
+                      <span>{w.diameter_kast ? `Case size: ${w.diameter_kast}mm` : '—'}</span>
                     </div>
                   </div>
                 </Link>
