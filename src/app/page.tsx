@@ -125,6 +125,11 @@ export default async function HomePage() {
                   <span>{w.jaar_geintroduceerd ? `Year introduced: ${w.jaar_geintroduceerd}` : '—'}</span>
                   <span>{w.diameter_kast ? `Case size: ${w.diameter_kast}mm` : '—'}</span>
                 </div>
+                {w.limited_edition && (
+                  <div className="mt-3">
+                    <span className="text-[9px] tracking-[0.15em] uppercase px-2 py-1 bg-[#1A1A1A] text-[#C9A84C] rounded-sm">Limited — {w.limited_edition.toLocaleString()} pieces</span>
+                  </div>
+                )}
               </div>
             </Link>
           ))}

@@ -8,4 +8,5 @@ export type Watch = {
   movement: string | null; productie_status: string | null; type_uurwerk: string | null
   prijs_euro: string | null; prijs_dollar: string | null
   jaar_geintroduceerd: number | null; diameter_kast: string | null
+  limited_edition: number | null
 }

@@ -53,6 +53,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     { label: 'Caliber', value: decodeHtml(watch.type_uurwerk) },
     { label: 'Movement', value: decodeHtml(watch.movement) },
     { label: 'Status', value: decodeHtml(watch.productie_status) },
+    { label: 'Limited Edition', value: watch.limited_edition ? `${watch.limited_edition.toLocaleString()} pieces` : null },
     { label: 'Year Introduced', value: watch.jaar_geintroduceerd },
     { label: 'Price EU', value: watch.prijs_euro ? `€${parseInt(watch.prijs_euro).toLocaleString()}` : null },
     { label: 'Price USA', value: watch.prijs_dollar ? `$${parseInt(watch.prijs_dollar).toLocaleString()}` : null },
