@@ -26,12 +26,19 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
   const mainImageUrl = watch.image ? imageUrl(watch.image) : null
   const extraUrls = (extraImages || []).map(img => `${STORAGE_URL}/${encodeURIComponent(img.filename)}`)
 
-  // AP-referentie foto's (beginnen met cijfers) altijd vooraan als hoofdfoto
+  // Dedupliceer op bestandsnaam, AP-referentie foto's altijd vooraan
   const isApRef = (url: string) => /\/\d{4,6}[A-Za-z]/.test(url)
   const allRaw = [...(mainImageUrl ? [mainImageUrl] : []), ...extraUrls]
+  const seen = new Set<string>()
+  const unique = allRaw.filter(url => {
+    const key = url.split('/').pop()!.toLowerCase()
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
   const allImages = [
-    ...allRaw.filter(isApRef),
-    ...allRaw.filter(u => !isApRef(u))
+    ...unique.filter(isApRef),
+    ...unique.filter(u => !isApRef(u))
   ]
 
   const fullReference = watch.model_id
