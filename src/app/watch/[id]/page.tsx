@@ -24,9 +24,14 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     .order('sort_order', { ascending: true })
 
   const mainImageUrl = watch.image ? imageUrl(watch.image) : null
+  const extraUrls = (extraImages || []).map(img => `${STORAGE_URL}/${encodeURIComponent(img.filename)}`)
+
+  // AP-referentie foto's (beginnen met cijfers) altijd vooraan als hoofdfoto
+  const isApRef = (url: string) => /\/\d{4,6}[A-Za-z]/.test(url)
+  const allRaw = [...(mainImageUrl ? [mainImageUrl] : []), ...extraUrls]
   const allImages = [
-    ...(mainImageUrl ? [mainImageUrl] : []),
-    ...(extraImages || []).map(img => `${STORAGE_URL}/${encodeURIComponent(img.filename)}`)
+    ...allRaw.filter(isApRef),
+    ...allRaw.filter(u => !isApRef(u))
   ]
 
   const fullReference = watch.model_id
