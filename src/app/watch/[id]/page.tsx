@@ -132,7 +132,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
             <div className="mt-8">
               <BackButton className="inline-flex items-center gap-3 text-[11px] tracking-[0.2em] uppercase text-[#888] hover:text-[#C9A84C] transition-colors cursor-pointer">
                 <span>←</span> Back to Archive
-              </Link>
+              </BackButton>
             </div>
           </div>
         </div>
