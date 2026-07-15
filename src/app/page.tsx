@@ -29,7 +29,7 @@ export default async function HomePage() {
 
       {/* HERO */}
       <section className="min-h-screen flex items-center pt-20">
-        <div className="w-full px-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
+        <div className="w-full px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
           <div>
             <p className="text-[11px] tracking-[0.3em] uppercase text-[#C9A84C] mb-6 flex items-center gap-3">
               <span className="block w-8 h-px bg-[#C9A84C]" />Independent Archive — Est. 2012
@@ -154,7 +154,7 @@ export default async function HomePage() {
       </section>
 
       {/* FOOTER */}
-      <footer className="px-6 md:px-10 py-8 bg-white border-t border-[#E8E2D9] flex justify-between items-center">
+      <footer className="px-6 md:px-10 py-8 bg-white border-t border-[#E8E2D9] flex flex-col gap-3 items-center text-center md:flex-row md:justify-between md:text-left">
         <span className="font-serif text-sm tracking-[0.2em] text-[#1A1A1A]">ROYAL OAK CLUB</span>
         <span className="text-[10px] text-[#AAA]">© Royal Oak Club — Independent since 2012</span>
         <Link href="/database" className="text-[10px] tracking-[0.2em] uppercase text-[#C9A84C] hover:text-[#B8973B] transition-colors">Database →</Link>

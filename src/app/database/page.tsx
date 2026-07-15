@@ -79,9 +79,9 @@ export default function DatabasePage() {
         <div className="flex justify-between items-end mb-10 pb-8 border-b border-[#E8E2D9]">
           <div>
             <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C] mb-2">The Archive</p>
-            <h1 className="font-serif text-5xl font-light">
+            <h1 className="font-serif text-3xl md:text-5xl font-light">
               All References
-              <span className="font-mono text-2xl text-[#CCC] ml-4">{loading ? '...' : total.toLocaleString()}</span>
+              <span className="font-mono text-xl md:text-2xl text-[#CCC] ml-3 md:ml-4">{loading ? '...' : total.toLocaleString()}</span>
             </h1>
           </div>
         </div>
@@ -152,9 +152,9 @@ export default function DatabasePage() {
                       <span className="text-[8px] tracking-[0.1em] uppercase px-1.5 py-0.5 bg-[#F0EDE8] text-[#999] rounded-sm ml-2 flex-shrink-0">{w.type?.replace('RoyalOak ', '') || '—'}</span>
                     </div>
                     <p className="font-mono text-[10px] text-[#C9A84C] mb-3 break-all">{getReference(w)}</p>
-                    <div className="flex justify-between text-[10px] text-[#BBB] border-t border-[#F0EDE8] pt-3">
-                      <span>{w.jaar_geintroduceerd ? `Year introduced: ${w.jaar_geintroduceerd}` : '—'}</span>
-                      <span>{w.diameter_kast ? `Case size: ${w.diameter_kast}mm` : '—'}</span>
+                    <div className="flex flex-col gap-0.5 text-[10px] text-[#BBB] border-t border-[#F0EDE8] pt-3 md:flex-row md:justify-between">
+                      <span>{w.jaar_geintroduceerd ? `Year: ${w.jaar_geintroduceerd}` : '—'}</span>
+                      <span>{w.diameter_kast ? `${w.diameter_kast}mm` : ''}</span>
                     </div>
                     {w.limited_edition && (
                       <div className="mt-2">
