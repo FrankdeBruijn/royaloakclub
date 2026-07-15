@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { waitUntil } from '@vercel/functions'
 import { createClient } from '@/lib/supabase-server'
 import sharp from 'sharp'
 import { Resend } from 'resend'
+
+export const maxDuration = 60
 
 const SUPABASE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co"
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!
@@ -84,7 +87,7 @@ export async function POST(request: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  await resend.emails.send({
+  waitUntil(resend.emails.send({
     from: 'Royal Oak Club <onboarding@resend.dev>',
     to: ['gewoonfrankdebruijn@gmail.com'], // tijdelijk: domein nog niet geverifieerd bij Resend
     subject: `Nieuwe submission: ${modelnaam}`,
@@ -119,7 +122,7 @@ export async function POST(request: NextRequest) {
         <p style="margin-top: 32px; font-size: 12px; color: #BBB;">Royal Oak Club — Independent Archive</p>
       </div>
     `
-  })
+  }))
 
   return NextResponse.json({ success: true })
 }
