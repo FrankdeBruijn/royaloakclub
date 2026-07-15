@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
 
   // Mail naar beheerders
   waitUntil(resend.emails.send({
-    from: 'Royal Oak Club <onboarding@resend.dev>',
+    from: 'Royal Oak Club <noreply@royaloakclub.frankdebruijn.com>',
     to: ['gewoonfrankdebruijn@gmail.com', 'koen@koensmulders.nl'],
     subject: `Nieuwe submission: ${modelnaam}`,
     html: `
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
   const submitterEmail = ingediend_door?.includes('@') ? ingediend_door : null
   if (submitterEmail) {
     waitUntil(resend.emails.send({
-      from: 'Royal Oak Club <onboarding@resend.dev>',
+      from: 'Royal Oak Club <noreply@royaloakclub.frankdebruijn.com>',
       to: [submitterEmail],
       subject: `We received your submission: ${modelnaam}`,
       html: `
