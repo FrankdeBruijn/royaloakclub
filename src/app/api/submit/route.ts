@@ -87,9 +87,11 @@ export async function POST(request: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   const resend = new Resend(process.env.RESEND_API_KEY)
+
+  // Mail naar beheerders
   waitUntil(resend.emails.send({
     from: 'Royal Oak Club <onboarding@resend.dev>',
-    to: ['gewoonfrankdebruijn@gmail.com'], // tijdelijk: domein nog niet geverifieerd bij Resend
+    to: ['gewoonfrankdebruijn@gmail.com', 'koen@koensmulders.nl'],
     subject: `Nieuwe submission: ${modelnaam}`,
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; color: #1A1A1A;">
@@ -110,7 +112,7 @@ export async function POST(request: NextRequest) {
           </tr>
           <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px 0; color: #888;">Ingediend door</td>
-            <td style="padding: 10px 0;">${ingediend_door}</td>
+            <td style="padding: 10px 0;">${ingediend_door || 'Anoniem'}</td>
           </tr>
         </table>
         <div style="margin-top: 32px;">
@@ -123,6 +125,38 @@ export async function POST(request: NextRequest) {
       </div>
     `
   }))
+
+  // Bevestigingsmail naar indiener (alleen als e-mailadres opgegeven)
+  const submitterEmail = ingediend_door?.includes('@') ? ingediend_door : null
+  if (submitterEmail) {
+    waitUntil(resend.emails.send({
+      from: 'Royal Oak Club <onboarding@resend.dev>',
+      to: [submitterEmail],
+      subject: `We received your submission: ${modelnaam}`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; color: #1A1A1A;">
+          <h1 style="font-size: 24px; font-weight: 400; margin-bottom: 8px;">Thank you for your submission</h1>
+          <p style="color: #888; font-size: 14px; margin-bottom: 32px;">We have received your watch and will review it before adding it to the archive.</p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tr style="border-bottom: 1px solid #eee;">
+              <td style="padding: 10px 0; color: #888; width: 140px;">Model</td>
+              <td style="padding: 10px 0; font-weight: 500;">${modelnaam}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+              <td style="padding: 10px 0; color: #888;">Reference</td>
+              <td style="padding: 10px 0;">${model_id}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #eee;">
+              <td style="padding: 10px 0; color: #888;">Status</td>
+              <td style="padding: 10px 0; color: #C9A84C; font-weight: 500;">Pending review</td>
+            </tr>
+          </table>
+          <p style="margin-top: 32px; font-size: 14px; color: #555;">Once approved, your watch will appear in the Royal Oak Club archive. You will not receive a further notification.</p>
+          <p style="margin-top: 32px; font-size: 12px; color: #BBB;">Royal Oak Club — Independent Archive since 2012</p>
+        </div>
+      `
+    }))
+  }
 
   return NextResponse.json({ success: true })
 }
