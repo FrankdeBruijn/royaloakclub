@@ -30,13 +30,24 @@ scp ~/Projects/royaloakclub/.env.local frankdebruijn@macstudanfrank5.home:~/Proj
 https://github.com/FrankdeBruijn/royaloakclub
 
 ## Locaties
-- **MacBook:** `~/Projects/royaloakclub`
-- **Mac Studio:** `~/Projects/royaloakclub` (clone sinds 2026-07-17), SSH via `ssh frankdebruijn@macstudanfrank5.home` (sleutel ingesteld)
-- **Backups:** `~/royaloakclub-wayback/` op Mac Studio
 
-Twee clones = GitHub is de scheidsrechter. Begin op elke machine met `git pull`,
-anders loop je uiteen. Andersom SSH'en (Mac Studio → MacBook) kan niet: daar staat
-Remote Login uit.
+| Waar | Pad | Rol |
+|---|---|---|
+| **NAS** | `/Volumes/NAS-MOBILE/MAINFRAME/Projecten/royaloakclub` | hier is V3 gebouwd; bereikbaar vanaf MacBook én Mac Studio |
+| **MacBook** | `~/Projects/royaloakclub` | lokale clone |
+| **Mac Studio** | `~/Projects/royaloakclub` | lokale clone (sinds 2026-07-17) |
+
+Drie clones = **GitHub is de scheidsrechter**. Begin op elke machine met `git pull`.
+
+Backups: `royaloakclub-backup/` en `royaloakclub-wayback/` staan ín de NAS-projectmap
+(niet in `~`). Ze zijn nu ge-gitignored — ze horen niet in deze publieke repo.
+
+SSH: MacBook → Mac Studio werkt (`ssh frankdebruijn@macstudanfrank5.home`, sleutel
+ingesteld). Andersom niet: op de MacBook staat Remote Login uit.
+
+**Werk je op de NAS-kopie?** Zet dan `git config core.fileMode false` — anders meldt
+git 39 gewijzigde bestanden die in werkelijkheid alleen van rechten verschillen (SMB-ruis).
+Dat is daar al ingesteld.
 
 ## Lokaal draaien
 ```bash

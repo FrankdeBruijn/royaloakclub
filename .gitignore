@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Lokale backups op de NAS-kopie — horen niet in deze publieke repo
+/royaloakclub-backup/
+/royaloakclub-wayback/
