@@ -9,15 +9,34 @@ Live op https://royaloakclub.vercel.app/ — auto-deploy bij push naar `main`.
 - Next.js 16.2.6 (Turbopack), TypeScript, Tailwind CSS
 - Supabase (URL: https://tiinckbwtmwrmmpuhfsy.supabase.co)
 - Vercel (auto-deploy)
-- `.env.local` aanwezig op MacBook met legacy JWT anon key
+
+## Env-vars (`.env.local`, staat nooit in git — `.gitignore` vangt `.env*`)
+
+| Variabele | Opmerking |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://tiinckbwtmwrmmpuhfsy.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | legacy JWT; staat toch in de browserbundel |
+| `SUPABASE_SERVICE_KEY` | **geheim** — omzeilt RLS, volledige DB-toegang |
+| `RESEND_API_KEY` | **geheim** — kan mail versturen |
+
+Deze repo is **publiek**. De onderste twee mogen er nooit in belanden.
+Nieuwe machine? Kopieer `.env.local` van een machine die hem al heeft:
+
+```bash
+scp ~/Projects/royaloakclub/.env.local frankdebruijn@macstudanfrank5.home:~/Projects/royaloakclub/
+```
 
 ## Repo
 https://github.com/FrankdeBruijn/royaloakclub
 
 ## Locaties
 - **MacBook:** `~/Projects/royaloakclub`
-- **Mac Studio:** SSH via `ssh frankdebruijn@macstudanfrank5.home` (sleutel ingesteld)
+- **Mac Studio:** `~/Projects/royaloakclub` (clone sinds 2026-07-17), SSH via `ssh frankdebruijn@macstudanfrank5.home` (sleutel ingesteld)
 - **Backups:** `~/royaloakclub-wayback/` op Mac Studio
+
+Twee clones = GitHub is de scheidsrechter. Begin op elke machine met `git pull`,
+anders loop je uiteen. Andersom SSH'en (Mac Studio → MacBook) kan niet: daar staat
+Remote Login uit.
 
 ## Lokaal draaien
 ```bash
