@@ -88,12 +88,16 @@ export async function POST(request: NextRequest) {
 
   const resend = new Resend(process.env.RESEND_API_KEY)
 
-  // Mail naar beheerders
-  waitUntil(resend.emails.send({
-    from: 'Royal Oak Club <noreply@royaloakclub.frankdebruijn.com>',
-    to: ['gewoonfrankdebruijn@gmail.com', 'koen@koensmulders.nl'],
-    subject: `Nieuwe submission: ${modelnaam}`,
-    html: `
+  // Mail naar beheerders — los per ontvanger verstuurd zodat een fout bij één
+  // (bijv. Resend-verzendrestrictie) niet stilzwijgend verdwijnt in een bulk-call
+  const adminRecipients = ['gewoonfrankdebruijn@gmail.com', 'koen@koensmulders.nl']
+  for (const recipient of adminRecipients) {
+    waitUntil(
+      resend.emails.send({
+        from: 'Royal Oak Club <noreply@royaloakclub.frankdebruijn.com>',
+        to: [recipient],
+        subject: `Nieuwe submission: ${modelnaam}`,
+        html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 32px; color: #1A1A1A;">
         <h1 style="font-size: 24px; font-weight: 400; margin-bottom: 8px;">Nieuwe horloge submission</h1>
         <p style="color: #888; font-size: 14px; margin-bottom: 32px;">Er staat een nieuw horloge klaar voor beoordeling.</p>
@@ -124,7 +128,11 @@ export async function POST(request: NextRequest) {
         <p style="margin-top: 32px; font-size: 12px; color: #BBB;">Royal Oak Club — Independent Archive</p>
       </div>
     `
-  }))
+      }).then(({ error }) => {
+        if (error) console.error(`Resend: mail naar ${recipient} mislukt:`, error)
+      })
+    )
+  }
 
   // Bevestigingsmail naar indiener (alleen als e-mailadres opgegeven)
   const submitterEmail = ingediend_door?.includes('@') ? ingediend_door : null
