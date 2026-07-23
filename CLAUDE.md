@@ -23,7 +23,7 @@ Deze repo is **publiek**. De onderste twee mogen er nooit in belanden.
 Nieuwe machine? Kopieer `.env.local` van een machine die hem al heeft:
 
 ```bash
-scp ~/Projects/royaloakclub/.env.local frankdebruijn@macstudanfrank5.home:~/Projects/royaloakclub/
+scp ~/Projects/royal-oak-club/royaloakclub/.env.local frankdebruijn@macstudanfrank5.home:~/Projects/royal-oak-club/royaloakclub/
 ```
 
 ## Repo
@@ -34,8 +34,8 @@ https://github.com/FrankdeBruijn/royaloakclub
 | Waar | Pad | Rol |
 |---|---|---|
 | **NAS** | `/Volumes/NAS-MOBILE/MAINFRAME/Projecten/royaloakclub` | hier is V3 gebouwd; bereikbaar vanaf MacBook én Mac Studio |
-| **MacBook** | `~/Projects/royaloakclub` | lokale clone |
-| **Mac Studio** | `~/Projects/royaloakclub` | lokale clone (sinds 2026-07-17) |
+| **MacBook** | `~/Projects/royal-oak-club/royaloakclub` | lokale clone (verplaatst onder klantmap 2026-07-23) |
+| **Mac Studio** | `~/Projects/royal-oak-club/royaloakclub` | lokale clone (verplaatst onder klantmap 2026-07-23) |
 
 Drie clones = **GitHub is de scheidsrechter**. Begin op elke machine met `git pull`.
 
