@@ -15,7 +15,7 @@ Live op https://royaloakclub.vercel.app/ — auto-deploy bij push naar `main`.
 | Variabele | Opmerking |
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://tiinckbwtmwrmmpuhfsy.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | legacy JWT; staat toch in de browserbundel |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | nieuwe-stijl publishable key (`sb_publishable_…`); hoort publiek te zijn en staat dus gewoon in de browserbundel |
 | `SUPABASE_SERVICE_KEY` | **geheim** — omzeilt RLS, volledige DB-toegang |
 | `RESEND_API_KEY` | **geheim** — kan mail versturen |
 
