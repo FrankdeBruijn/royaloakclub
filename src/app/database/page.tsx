@@ -21,48 +21,100 @@ const getReference = (w: Watch): string => {
   return w.model_id || '—'
 }
 
-function WatchImage({ src, alt }: { src: string, alt: string }) {
-  const [failed, setFailed] = useState(false)
-  if (failed) return (
-    <div className="w-16 h-16 opacity-10">
-      <svg viewBox="0 0 200 200" fill="none"><polygon points="70,5 130,5 195,70 195,130 130,195 70,195 5,130 5,70" stroke="#C9A84C" strokeWidth="2" fill="none" /></svg>
-    </div>
-  )
+type WatchWithExtras = Watch & { extraImages: string[] }
+
+const NoImagePlaceholder = () => (
+  <div className="w-16 h-16 opacity-10">
+    <svg viewBox="0 0 200 200" fill="none"><polygon points="70,5 130,5 195,70 195,130 130,195 70,195 5,130 5,70" stroke="#C9A84C" strokeWidth="2" fill="none" /></svg>
+  </div>
+)
+
+// Probeert `srcs` op volgorde; als de hoofdfoto ontbreekt of niet laadt (kapotte
+// link, verkeerd bestand) valt hij terug op de volgende foto uit watch_images
+// in plaats van meteen "geen foto" te tonen.
+function WatchImage({ srcs, alt }: { srcs: string[], alt: string }) {
+  const [index, setIndex] = useState(0)
+  if (index >= srcs.length) return <NoImagePlaceholder />
   return (
-    <Image src={src} alt={alt} width={200} height={200}
+    <Image src={srcs[index]} alt={alt} width={200} height={200}
       className="object-contain group-hover:scale-105 transition-transform duration-500"
-      unoptimized onError={() => setFailed(true)} />
+      unoptimized onError={() => setIndex(i => i + 1)} />
   )
 }
 
 export default function DatabasePage() {
-  const [watches, setWatches] = useState<Watch[]>([])
+  const [watches, setWatches] = useState<WatchWithExtras[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [activeType, setActiveType] = useState('All')
   const [page, setPage] = useState(0)
   const [showNoImage, setShowNoImage] = useState(false)
+  // Blijft false tot de URL is uitgelezen, zodat fetchWatches niet één keer met
+  // de (mogelijk verkeerde) beginwaarden en daarna nog eens met de juiste
+  // waarden vuurt — twee gelijktijdige fetches waarvan de verkeerde als laatste
+  // kan terugkomen en de juiste data overschrijft.
+  const [ready, setReady] = useState(false)
 
+  // Filters + paginanummer uit de URL lezen bij binnenkomst (ook via terugknop
+  // vanaf een detailpagina), zodat je niet weer bij pagina 1 begint.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const type = params.get('type')
+    const q = params.get('q')
+    const p = parseInt(params.get('page') || '1', 10)
+    const noimage = params.get('noimage') === '1'
     if (type && TYPES.includes(type)) setActiveType(type)
+    if (q) setSearch(q)
+    if (noimage) setShowNoImage(true)
+    if (p > 1) setPage(p - 1)
+    setReady(true)
   }, [])
 
+  // ...en andersom: huidige filters + pagina terugschrijven naar de URL, zonder
+  // een nieuwe history-entry toe te voegen (replaceState, geen router.push).
+  useEffect(() => {
+    if (!ready) return
+    const params = new URLSearchParams()
+    if (activeType !== 'All') params.set('type', activeType)
+    if (search) params.set('q', search)
+    if (showNoImage) params.set('noimage', '1')
+    if (page > 0) params.set('page', String(page + 1))
+    const qs = params.toString()
+    const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname
+    window.history.replaceState(null, '', url)
+  }, [ready, activeType, search, showNoImage, page])
+
   const fetchWatches = useCallback(async () => {
+    if (!ready) return
     setLoading(true)
     let query = supabase.from('watches').select('*', { count: 'exact' })
     if (activeType !== 'All') query = query.eq('type', activeType)
     if (search) query = query.or(`modelnaam.ilike.%${search}%,model_id.ilike.%${search}%,type_uurwerk.ilike.%${search}%`)
     if (!showNoImage) query = query.not('image', 'is', null)
     const { data, count } = await query.order('model_id').range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
-    setWatches(data || [])
+    const rows = data || []
+
+    // Extra foto's voor deze pagina ophalen, als fallback voor als de hoofdfoto
+    // ontbreekt of niet laadt (zie WatchImage hieronder).
+    const ids = rows.map(w => w.id)
+    const extrasByWatch: Record<number, string[]> = {}
+    if (ids.length > 0) {
+      const { data: extras } = await supabase
+        .from('watch_images')
+        .select('watch_id, filename')
+        .in('watch_id', ids)
+        .order('sort_order', { ascending: true })
+      for (const img of extras || []) {
+        (extrasByWatch[img.watch_id] ||= []).push(img.filename)
+      }
+    }
+
+    setWatches(rows.map(w => ({ ...w, extraImages: extrasByWatch[w.id] || [] })))
     setTotal(count || 0)
     setLoading(false)
-  }, [search, activeType, page, showNoImage])
+  }, [search, activeType, page, showNoImage, ready])
 
-  useEffect(() => { setPage(0) }, [search, activeType, showNoImage])
   useEffect(() => { fetchWatches() }, [fetchWatches])
 
   return (
@@ -94,23 +146,24 @@ export default function DatabasePage() {
             </span>
             <input
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => { setSearch(e.target.value); setPage(0) }}
               placeholder="Search name, reference, caliber..."
               className="flex-1 bg-transparent py-4 font-serif text-lg font-light placeholder-[#CCC] outline-none text-[#1A1A1A]"
             />
-            {search && <button onClick={() => setSearch('')} className="px-4 text-[#CCC] hover:text-[#1A1A1A]">✕</button>}
+            {search && <button onClick={() => { setSearch(''); setPage(0) }} className="px-4 text-[#CCC] hover:text-[#1A1A1A]">✕</button>}
           </div>
           <div className="flex gap-2 flex-wrap items-center">
             {TYPES.map(t => (
-              <button key={t} onClick={() => setActiveType(t)}
+              <button key={t} onClick={() => { setActiveType(t); setPage(0) }}
                 className={`text-[10px] tracking-[0.15em] uppercase px-4 py-2 border transition-all rounded-sm ${activeType === t ? 'border-[#C9A84C] text-[#C9A84C] bg-[#C9A84C]/5' : 'border-[#D0C9BC] text-[#888] hover:border-[#C9A84C] bg-white'}`}>
                 {t}
               </button>
             ))}
-            <button onClick={() => setShowNoImage(v => !v)}
+            <button onClick={() => { setShowNoImage(v => !v); setPage(0) }}
+              title={showNoImage ? 'Toont nu ook horloges zonder foto — klik om ze weer te verbergen' : 'Toont alleen horloges met foto — klik om ook horloges zonder foto te tonen'}
               className={`text-[10px] tracking-[0.15em] uppercase px-4 py-2 border transition-all rounded-sm flex items-center gap-2 ${showNoImage ? 'border-[#C9A84C] text-[#C9A84C] bg-[#C9A84C]/5' : 'border-[#D0C9BC] text-[#888] hover:border-[#C9A84C] bg-white'}`}>
-              <span>{showNoImage ? '○' : '●'}</span>
-              No image
+              <span>{showNoImage ? '●' : '○'}</span>
+              Show no-image
             </button>
           </div>
         </div>
@@ -138,13 +191,15 @@ export default function DatabasePage() {
                 <Link key={w.id} href={`/watch/${w.id}`} className="group bg-white rounded-xl overflow-hidden hover:shadow-lg hover:shadow-black/8 transition-all duration-300">
                   <div className="aspect-square bg-[#F8F6F2] flex items-center justify-center p-6 relative overflow-hidden">
                     <div className="absolute inset-0 bg-[#C9A84C]/0 group-hover:bg-[#C9A84C]/3 transition-colors" />
-                    {w.image ? (
-                      <WatchImage src={imageUrl(w.image)} alt={w.modelnaam || 'Royal Oak'} />
-                    ) : (
-                      <div className="w-16 h-16 opacity-10">
-                        <svg viewBox="0 0 200 200" fill="none"><polygon points="70,5 130,5 195,70 195,130 130,195 70,195 5,130 5,70" stroke="#C9A84C" strokeWidth="2" fill="none" /></svg>
-                      </div>
-                    )}
+                    {(() => {
+                      const srcs = [
+                        ...(w.image ? [imageUrl(w.image)] : []),
+                        ...w.extraImages.map(f => imageUrl(f)),
+                      ]
+                      return srcs.length > 0
+                        ? <WatchImage srcs={srcs} alt={w.modelnaam || 'Royal Oak'} />
+                        : <NoImagePlaceholder />
+                    })()}
                   </div>
                   <div className="p-5">
                     <div className="flex justify-between items-start mb-1">

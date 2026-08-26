@@ -40,12 +40,17 @@ export default async function HomePage() {
             <p className="text-[15px] leading-relaxed text-[#666] max-w-md mb-10">
               The most comprehensive independent archive of Audemars Piguet Royal Oak references. Every model, every caliber, every edition — documented since 2012.
             </p>
-            <div className="flex gap-4 mb-16">
+            <div className="flex gap-4 mb-6 flex-wrap">
               <Link href="/database" className="px-8 py-4 bg-[#1A1A1A] text-white text-[11px] tracking-[0.2em] uppercase hover:bg-[#C9A84C] transition-colors">
                 Browse Archive
               </Link>
               <Link href="/database" className="px-8 py-4 border border-[#D0C9BC] text-[#666] text-[11px] tracking-[0.2em] uppercase hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors">
                 Search →
+              </Link>
+            </div>
+            <div className="mb-10">
+              <Link href="/submit" className="text-[11px] tracking-[0.2em] uppercase text-[#C9A84C] border-b border-[#C9A84C] pb-0.5 hover:text-[#B8973B] hover:border-[#B8973B] transition-colors">
+                Missing a reference? Submit a Watch →
               </Link>
             </div>
             <div className="flex gap-10 pt-8 border-t border-[#E8E2D9]">
