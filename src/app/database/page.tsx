@@ -50,6 +50,11 @@ export default function DatabasePage() {
   const [activeType, setActiveType] = useState('All')
   const [page, setPage] = useState(0)
   const [showNoImage, setShowNoImage] = useState(false)
+  // Blijft false tot de URL is uitgelezen, zodat fetchWatches niet één keer met
+  // de (mogelijk verkeerde) beginwaarden en daarna nog eens met de juiste
+  // waarden vuurt — twee gelijktijdige fetches waarvan de verkeerde als laatste
+  // kan terugkomen en de juiste data overschrijft.
+  const [ready, setReady] = useState(false)
 
   // Filters + paginanummer uit de URL lezen bij binnenkomst (ook via terugknop
   // vanaf een detailpagina), zodat je niet weer bij pagina 1 begint.
@@ -63,11 +68,13 @@ export default function DatabasePage() {
     if (q) setSearch(q)
     if (noimage) setShowNoImage(true)
     if (p > 1) setPage(p - 1)
+    setReady(true)
   }, [])
 
   // ...en andersom: huidige filters + pagina terugschrijven naar de URL, zonder
   // een nieuwe history-entry toe te voegen (replaceState, geen router.push).
   useEffect(() => {
+    if (!ready) return
     const params = new URLSearchParams()
     if (activeType !== 'All') params.set('type', activeType)
     if (search) params.set('q', search)
@@ -76,9 +83,10 @@ export default function DatabasePage() {
     const qs = params.toString()
     const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname
     window.history.replaceState(null, '', url)
-  }, [activeType, search, showNoImage, page])
+  }, [ready, activeType, search, showNoImage, page])
 
   const fetchWatches = useCallback(async () => {
+    if (!ready) return
     setLoading(true)
     let query = supabase.from('watches').select('*', { count: 'exact' })
     if (activeType !== 'All') query = query.eq('type', activeType)
@@ -105,7 +113,7 @@ export default function DatabasePage() {
     setWatches(rows.map(w => ({ ...w, extraImages: extrasByWatch[w.id] || [] })))
     setTotal(count || 0)
     setLoading(false)
-  }, [search, activeType, page, showNoImage])
+  }, [search, activeType, page, showNoImage, ready])
 
   useEffect(() => { fetchWatches() }, [fetchWatches])
 
