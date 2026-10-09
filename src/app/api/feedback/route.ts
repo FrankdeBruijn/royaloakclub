@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { waitUntil } from '@vercel/functions'
 import { createClient } from '@/lib/supabase-server'
 import { Resend } from 'resend'
-
-// Formulier is publiek: alles wat erin komt, gaat ge-escaped de mail in
-function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
-}
+import { escapeHtml } from '@/lib/escape'
 
 export async function POST(request: NextRequest) {
   const body = await request.json()

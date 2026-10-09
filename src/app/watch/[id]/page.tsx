@@ -118,6 +118,23 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
               </div>
             )}
 
+            {watch.complications?.length > 0 && (
+              <div className="mb-8 p-6 bg-white rounded-xl border border-[#E8E2D9]">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="block w-4 h-px bg-[#C9A84C]" />
+                  <h2 className="text-[10px] tracking-[0.3em] uppercase text-[#C9A84C]">Complications</h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(watch.complications as string[]).map(c => (
+                    <Link key={c} href={`/database?comp=${encodeURIComponent(c)}`}
+                      className="text-[10px] tracking-[0.15em] uppercase px-3 py-1.5 border border-[#C9A84C]/40 text-[#8A7230] bg-[#C9A84C]/5 hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors rounded-sm">
+                      {c}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden">
               <div className="px-6 py-4 border-b border-[#E8E2D9] flex items-center gap-3">
                 <span className="block w-4 h-px bg-[#C9A84C]" />

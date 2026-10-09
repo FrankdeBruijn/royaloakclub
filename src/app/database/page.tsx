@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { Watch } from '@/lib/supabase'
+import { COMPLICATIONS } from '@/lib/complications'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -50,6 +51,7 @@ export default function DatabasePage() {
   const [activeType, setActiveType] = useState('All')
   const [page, setPage] = useState(0)
   const [showNoImage, setShowNoImage] = useState(false)
+  const [complication, setComplication] = useState('')
   // Blijft false tot de URL is uitgelezen, zodat fetchWatches niet één keer met
   // de (mogelijk verkeerde) beginwaarden en daarna nog eens met de juiste
   // waarden vuurt — twee gelijktijdige fetches waarvan de verkeerde als laatste
@@ -64,7 +66,9 @@ export default function DatabasePage() {
     const q = params.get('q')
     const p = parseInt(params.get('page') || '1', 10)
     const noimage = params.get('noimage') === '1'
+    const comp = params.get('comp')
     if (type && TYPES.includes(type)) setActiveType(type)
+    if (comp && (COMPLICATIONS as readonly string[]).includes(comp)) setComplication(comp)
     if (q) setSearch(q)
     if (noimage) setShowNoImage(true)
     if (p > 1) setPage(p - 1)
@@ -79,11 +83,12 @@ export default function DatabasePage() {
     if (activeType !== 'All') params.set('type', activeType)
     if (search) params.set('q', search)
     if (showNoImage) params.set('noimage', '1')
+    if (complication) params.set('comp', complication)
     if (page > 0) params.set('page', String(page + 1))
     const qs = params.toString()
     const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname
     window.history.replaceState(null, '', url)
-  }, [ready, activeType, search, showNoImage, page])
+  }, [ready, activeType, search, showNoImage, complication, page])
 
   const fetchWatches = useCallback(async () => {
     if (!ready) return
@@ -92,6 +97,7 @@ export default function DatabasePage() {
     if (activeType !== 'All') query = query.eq('type', activeType)
     if (search) query = query.or(`modelnaam.ilike.%${search}%,model_id.ilike.%${search}%,type_uurwerk.ilike.%${search}%`)
     if (!showNoImage) query = query.not('image', 'is', null)
+    if (complication) query = query.contains('complications', [complication])
     const { data, count } = await query.order('model_id').range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
     const rows = data || []
 
@@ -113,7 +119,7 @@ export default function DatabasePage() {
     setWatches(rows.map(w => ({ ...w, extraImages: extrasByWatch[w.id] || [] })))
     setTotal(count || 0)
     setLoading(false)
-  }, [search, activeType, page, showNoImage, ready])
+  }, [search, activeType, page, showNoImage, complication, ready])
 
   useEffect(() => { fetchWatches() }, [fetchWatches])
 
@@ -165,6 +171,12 @@ export default function DatabasePage() {
               <span>{showNoImage ? '●' : '○'}</span>
               Show no-image
             </button>
+            <select value={complication} onChange={e => { setComplication(e.target.value); setPage(0) }}
+              aria-label="Filter by complication"
+              className={`text-[10px] tracking-[0.15em] uppercase px-3 py-2 border transition-all rounded-sm bg-white outline-none cursor-pointer ${complication ? 'border-[#C9A84C] text-[#C9A84C]' : 'border-[#D0C9BC] text-[#888] hover:border-[#C9A84C]'}`}>
+              <option value="">All complications</option>
+              {COMPLICATIONS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
           </div>
         </div>
 

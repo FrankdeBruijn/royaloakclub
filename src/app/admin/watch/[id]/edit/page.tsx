@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import ImageUploader from './ImageUploader'
+import { COMPLICATIONS } from '@/lib/complications'
 
 const STORAGE_URL = "https://tiinckbwtmwrmmpuhfsy.supabase.co/storage/v1/object/public/watch-images"
 
@@ -34,6 +35,11 @@ export default async function EditWatchPage({ params }: { params: Promise<{ id: 
       prijs_dollar: formData.get('prijs_dollar') as string || null,
       description: formData.get('description') as string || null,
       image: formData.get('image') as string || null,
+      limited_edition: formData.get('limited_edition') ? parseInt(formData.get('limited_edition') as string) : null,
+      complications: (() => {
+        const picked = formData.getAll('complications').map(String).filter(c => (COMPLICATIONS as readonly string[]).includes(c))
+        return picked.length > 0 ? picked : null
+      })(),
     }).eq('id', id)
     redirect('/admin')
   }
@@ -56,6 +62,7 @@ export default async function EditWatchPage({ params }: { params: Promise<{ id: 
     { name: 'movement', label: 'Movement', value: watch.movement },
     { name: 'productie_status', label: 'Status', value: watch.productie_status },
     { name: 'jaar_geintroduceerd', label: 'Year Introduced', value: watch.jaar_geintroduceerd },
+    { name: 'limited_edition', label: 'Limited Edition (pieces, 1 = piece unique)', value: watch.limited_edition },
     { name: 'prijs_euro', label: 'Price EU (€)', value: watch.prijs_euro },
     { name: 'prijs_dollar', label: 'Price USA ($)', value: watch.prijs_dollar },
     { name: 'description', label: 'Description', value: watch.description, span: true, textarea: true },
@@ -99,6 +106,19 @@ export default async function EditWatchPage({ params }: { params: Promise<{ id: 
                   )}
                   </div>
                 ))}
+                <fieldset className="col-span-2">
+                  <legend className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] block mb-3">Complications</legend>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+                    {COMPLICATIONS.map(c => (
+                      <label key={c} className="flex items-center gap-2 text-sm text-[#1A1A1A] cursor-pointer">
+                        <input type="checkbox" name="complications" value={c}
+                          defaultChecked={(watch.complications || []).includes(c)}
+                          className="accent-[#C9A84C] w-4 h-4" />
+                        {c}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
                 <div className="col-span-2">
                   <label className="text-[10px] tracking-[0.2em] uppercase text-[#AAA] block mb-2">Image filename</label>
                   <input

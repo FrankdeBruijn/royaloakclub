@@ -3,6 +3,7 @@ import { waitUntil } from '@vercel/functions'
 import { createClient } from '@/lib/supabase-server'
 import sharp from 'sharp'
 import { Resend } from 'resend'
+import { escapeHtml } from '@/lib/escape'
 
 export const maxDuration = 60
 
@@ -87,6 +88,12 @@ export async function POST(request: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   const resend = new Resend(process.env.RESEND_API_KEY)
+  // Formulier is publiek: wat in de HTML-mails komt, eerst escapen
+  const esc = {
+    modelnaam: escapeHtml(modelnaam),
+    model_id: escapeHtml(model_id),
+    ingediend_door: escapeHtml(ingediend_door || 'Anoniem'),
+  }
 
   // Mail naar beheerders — los per ontvanger verstuurd zodat een fout bij één
   // (bijv. Resend-verzendrestrictie) niet stilzwijgend verdwijnt in een bulk-call
@@ -104,11 +111,11 @@ export async function POST(request: NextRequest) {
         <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
           <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px 0; color: #888; width: 140px;">Model</td>
-            <td style="padding: 10px 0; font-weight: 500;">${modelnaam}</td>
+            <td style="padding: 10px 0; font-weight: 500;">${esc.modelnaam}</td>
           </tr>
           <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px 0; color: #888;">Reference</td>
-            <td style="padding: 10px 0;">${model_id}</td>
+            <td style="padding: 10px 0;">${esc.model_id}</td>
           </tr>
           <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px 0; color: #888;">Foto's</td>
@@ -116,11 +123,11 @@ export async function POST(request: NextRequest) {
           </tr>
           <tr style="border-bottom: 1px solid #eee;">
             <td style="padding: 10px 0; color: #888;">Ingediend door</td>
-            <td style="padding: 10px 0;">${ingediend_door || 'Anoniem'}</td>
+            <td style="padding: 10px 0;">${esc.ingediend_door}</td>
           </tr>
         </table>
         <div style="margin-top: 32px;">
-          <a href="https://royaloakclub.vercel.app/admin/submissions"
+          <a href="https://royaloakclub.com/admin/submissions"
              style="background: #C9A84C; color: white; padding: 12px 28px; text-decoration: none; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;">
             Bekijk submission →
           </a>
@@ -148,11 +155,11 @@ export async function POST(request: NextRequest) {
           <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
             <tr style="border-bottom: 1px solid #eee;">
               <td style="padding: 10px 0; color: #888; width: 140px;">Model</td>
-              <td style="padding: 10px 0; font-weight: 500;">${modelnaam}</td>
+              <td style="padding: 10px 0; font-weight: 500;">${esc.modelnaam}</td>
             </tr>
             <tr style="border-bottom: 1px solid #eee;">
               <td style="padding: 10px 0; color: #888;">Reference</td>
-              <td style="padding: 10px 0;">${model_id}</td>
+              <td style="padding: 10px 0;">${esc.model_id}</td>
             </tr>
             <tr style="border-bottom: 1px solid #eee;">
               <td style="padding: 10px 0; color: #888;">Status</td>

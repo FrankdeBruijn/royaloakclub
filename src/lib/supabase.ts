@@ -9,4 +9,5 @@ export type Watch = {
   prijs_euro: string | null; prijs_dollar: string | null
   jaar_geintroduceerd: number | null; diameter_kast: string | null
   limited_edition: number | null
+  complications: string[] | null
 }
