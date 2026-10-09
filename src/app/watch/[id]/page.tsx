@@ -27,7 +27,8 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
   const mainImageUrl = watch.image ? imageUrl(watch.image) : null
   const extraUrls = (extraImages || []).map(img => `${STORAGE_URL}/${encodeURIComponent(img.filename)}`)
 
-  // Dedupliceer op bestandsnaam, AP-referentie foto's altijd vooraan
+  // Dedupliceer op bestandsnaam. De hoofdfoto (watches.image) staat altijd
+  // vooraan — die is bewust gekozen; daarna AP-referentie foto's, dan de rest
   const isApRef = (url: string) => /\/\d{4,6}[A-Za-z]/.test(url)
   const allRaw = [...(mainImageUrl ? [mainImageUrl] : []), ...extraUrls]
   const seen = new Set<string>()
@@ -37,10 +38,10 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     seen.add(key)
     return true
   })
-  const allImages = [
-    ...unique.filter(isApRef),
-    ...unique.filter(u => !isApRef(u))
-  ]
+  const [first, ...rest] = unique
+  const allImages = mainImageUrl && first === mainImageUrl
+    ? [first, ...rest.filter(isApRef), ...rest.filter(u => !isApRef(u))]
+    : [...unique.filter(isApRef), ...unique.filter(u => !isApRef(u))]
 
   const fullReference = watch.model_id
 
@@ -53,7 +54,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
     { label: 'Caliber', value: decodeHtml(watch.type_uurwerk) },
     { label: 'Movement', value: decodeHtml(watch.movement) },
     { label: 'Status', value: decodeHtml(watch.productie_status) },
-    { label: 'Limited Edition', value: watch.limited_edition ? `${watch.limited_edition.toLocaleString()} pieces` : null },
+    { label: 'Limited Edition', value: watch.limited_edition ? (watch.limited_edition === 1 ? 'Piece unique' : `${watch.limited_edition.toLocaleString()} pieces`) : null },
     { label: 'Year Introduced', value: watch.jaar_geintroduceerd },
     { label: 'Price EU', value: watch.prijs_euro ? `€${parseInt(watch.prijs_euro).toLocaleString()}` : null },
     { label: 'Price USA', value: watch.prijs_dollar ? `$${parseInt(watch.prijs_dollar).toLocaleString()}` : null },
