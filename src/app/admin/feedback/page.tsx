@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase-browser'
 import Link from 'next/link'
 
@@ -18,22 +18,22 @@ export default function FeedbackAdminPage() {
   const [processing, setProcessing] = useState<number | null>(null)
   const supabase = createClient()
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    const { data } = await supabase
+  useEffect(() => {
+    supabase
       .from('feedback')
       .select('*')
       .order('created_at', { ascending: false })
-    setItems(data || [])
-    setLoading(false)
+      .then(({ data }) => {
+        setItems(data || [])
+        setLoading(false)
+      })
   }, [supabase])
-
-  useEffect(() => { load() }, [load])
 
   async function markDone(id: number) {
     setProcessing(id)
-    await supabase.from('feedback').update({ status: 'done' }).eq('id', id)
-    setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'done' } : i))
+    // .select() zodat een door RLS geweigerde update niet stil als "gelukt" oogt
+    const { data } = await supabase.from('feedback').update({ status: 'done' }).eq('id', id).select('id')
+    if (data?.length) setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'done' } : i))
     setProcessing(null)
   }
 
